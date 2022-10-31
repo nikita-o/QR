@@ -4,4 +4,4 @@ export function generateQR(data) {
   QRCode.toFile("foo.png", data);
 }
 
-generateQR();
+
