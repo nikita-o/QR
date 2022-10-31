@@ -1,7 +1,5 @@
 import QRCode from "qrcode";
 
-export function generateQR(data) {
-  QRCode.toFile("foo.png", data);
+export async function generateQR(data) {
+  await QRCode.toFile("foo.png", data);
 }
-
-

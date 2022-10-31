@@ -1,12 +1,16 @@
 import express from "express";
+import { createCertificate, acceptCertificate } from "./certificate.service.js";
 export const router = express.Router();
 
 /* GET home page. */
 router
-  .get("/", function (req, res) {
-    res.render("index", { title: "Express" });
+  .post("/create-certificate", function (req, res) {
+    createCertificate(req.body);
+    res.send("Create");
   })
 
-  .get("/", function (req, res) {
-    res.render("index", { title: "Express" });
+  .get("/close-certificate/:encryptId", function (req, res) {
+    console.log(req.params);
+    res.send(acceptCertificate(req.params.encryptId));
+    // res.send("True");
   });
