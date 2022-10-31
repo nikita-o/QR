@@ -1,26 +1,27 @@
-const QRCode = require('qrcode');
+import QRCode from "qrcode";
 
 function generateQR(data) {
-    QRCode.toFile(
-        'foo.png',
-        JSON.stringify(data),
-    );
+  QRCode.toFile("foo.png", JSON.stringify(data));
 }
 
-generateQR({test: 123});
+generateQR({ test: 123 });
 
 function encrypt(data) {
-    const cipher = crypto.createCipheriv('aes-256-cbc', Securitykey, initVector);
-    let encryptedData = cipher.update(data, "utf-8", "hex");
-    encryptedData += cipher.final("hex");
-    return encryptedData;
+  const cipher = crypto.createCipheriv("aes-256-cbc", Securitykey, initVector);
+  let encryptedData = cipher.update(data, "utf-8", "hex");
+  encryptedData += cipher.final("hex");
+  return encryptedData;
 }
 
 function decrypt(data) {
-    const decipher = crypto.createDecipheriv('aes-256-cbc', Securitykey, initVector);
-    let decryptedData = decipher.update(data, "hex", "utf-8");
-    decryptedData += decipher.final("utf8");
-    return decryptedData;
+  const decipher = crypto.createDecipheriv(
+    "aes-256-cbc",
+    Securitykey,
+    initVector
+  );
+  let decryptedData = decipher.update(data, "hex", "utf-8");
+  decryptedData += decipher.final("utf8");
+  return decryptedData;
 }
 
 // const crypto = require("crypto");
@@ -51,4 +52,4 @@ decryptedData += decipher.final("utf8");
 
 console.log("Decrypted message: " + decryptedData);
 console.log("Decrypted message (json to obj): ");
-console.log(JSON.parse(decryptedData))
+console.log(JSON.parse(decryptedData));
