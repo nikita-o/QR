@@ -1,4 +1,3 @@
-// import { initVector, SecurityKey } from "../config/index.js";
 import crypto from "crypto";
 
 const SecurityKey = crypto.randomBytes(32);

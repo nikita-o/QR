@@ -1,6 +1,6 @@
-import { encrypt, decrypt } from "../utils/crypt.js";
-import { generateQR } from "../utils/qr-generate.js";
-import { sendMail } from "../utils/send-mail.js";
+import { encrypt, decrypt } from "../utils/crypt";
+import { generateQR } from "../utils/qr-generate";
+import { sendMail } from "../utils/send-mail";
 
 export async function createCertificate(data) {
   const encryptId = encrypt(data.id); //должна быть строка

@@ -1,5 +1,5 @@
 import express from "express";
-import { createCertificate, acceptCertificate } from "./certificate.service.js";
+import { createCertificate, acceptCertificate } from "./certificate.service";
 export const router = express.Router();
 
 /* GET home page. */

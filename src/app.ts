@@ -2,7 +2,7 @@ import express from "express";
 import logger from "morgan";
 
 // const indexRouter = require("./routes/index");
-import { router } from "./certificate/certificate.controller.js";
+import { router } from "./certificate/certificate.controller";
 const app = express();
 
 app.use(logger("dev"));
