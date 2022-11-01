@@ -9,7 +9,7 @@ router
     res.send("Create");
   })
 
-  .get("/close-certificate/:encryptId", function (req: Request, res: Response) {
+  .get("/close-certificate/:encryptId", (req: Request, res: Response) => {
     console.log(req.params);
     res.send(acceptCertificate(req.params.encryptId));
     // res.send("True");

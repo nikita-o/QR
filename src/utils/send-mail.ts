@@ -1,7 +1,7 @@
-import nodemailer from "nodemailer";
+import {createTransport, Transporter} from "nodemailer";
 
-export async function sendMail(recipient: string, message: string, qr: Buffer) {
-  let transporter = nodemailer.createTransport({
+export async function sendMail(recipient: string, message: string, qr: Buffer): Promise<void> {
+  const transporter: Transporter = createTransport({
     service: "smtp.mail.ru",
     host: "smtp.mail.ru",
     auth: {
@@ -10,7 +10,7 @@ export async function sendMail(recipient: string, message: string, qr: Buffer) {
     },
   });
 
-  let info = await transporter.sendMail({
+  await transporter.sendMail({
     from: "usermail",
     to: recipient,
     subject: "message",

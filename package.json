@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node .",
-    "server:watch": "ts-node-dev --respawn --transpile-only src/app.ts"
+    "debug:watch": "ts-node-dev --respawn --transpile-only src/app.ts"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",

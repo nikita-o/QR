@@ -12,9 +12,3 @@ export async function createCertificate(data: any) {
 export function acceptCertificate(encryptId: string) {
   return decrypt(encryptId);
 }
-
-// attachments: [
-//     {   // utf-8 string as an attachment
-//         filename: 'text1.txt',
-//         content: 'hello world!'
-//     },
