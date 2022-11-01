@@ -1,6 +1,6 @@
 // import nodemailer from "nodemailer";
 
-export async function sendMail(recipient, message) {
+export async function sendMail(recipient: string, message: string) {
     // let transporter = nodemailer.createTransport({
     //     service: mailService,
     //     host: 'smtp.mail.ru',

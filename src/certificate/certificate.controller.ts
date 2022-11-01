@@ -1,15 +1,15 @@
-import express from "express";
+import {Request, Response, Router} from "express";
 import { createCertificate, acceptCertificate } from "./certificate.service";
-export const router = express.Router();
 
-/* GET home page. */
+export const router: Router = Router();
+
 router
-  .post("/create-certificate", function (req, res) {
-    createCertificate(req.body);
+  .post("/create-certificate", async (req: Request, res: Response) => {
+    await createCertificate(req.body);
     res.send("Create");
   })
 
-  .get("/close-certificate/:encryptId", function (req, res) {
+  .get("/close-certificate/:encryptId", function (req: Request, res: Response) {
     console.log(req.params);
     res.send(acceptCertificate(req.params.encryptId));
     // res.send("True");

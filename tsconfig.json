@@ -9,6 +9,7 @@
     "allowSyntheticDefaultImports": true,
     "outDir": "dist",
     "baseUrl": ".",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "strict": true
   }
 }

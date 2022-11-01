@@ -1,11 +1,10 @@
-import express from "express";
-import logger from "morgan";
-
-// const indexRouter = require("./routes/index");
+import express, {Express} from "express";
+//import logger from "morgan";
 import { router } from "./certificate/certificate.controller";
-const app = express();
 
-app.use(logger("dev"));
+const app: Express = express();
+
+//app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
