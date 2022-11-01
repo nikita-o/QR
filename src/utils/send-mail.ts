@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-export async function sendMail(recipient: string, message: string) {
+export async function sendMail(recipient: string, message: string, qr: Buffer) {
   let transporter = nodemailer.createTransport({
     service: "smtp.mail.ru",
     host: "smtp.mail.ru",
@@ -19,8 +19,8 @@ export async function sendMail(recipient: string, message: string) {
     attachments: [
       {
         // filename and content type is derived from path
-        filename: "foo.png",
-        path: "foo.png",
+        filename: "filename.png",
+        content: qr,
       },
     ],
   });
