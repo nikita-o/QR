@@ -14,13 +14,17 @@ export async function createCertificate(data: any) {
   const encryptId = encrypt(data.id); //должна быть строка
   const url = `${ngrockHost}/close-certificate/?encryptId=${encryptId}`;
   console.log(url);
-
   const qr: Buffer = await generateQR(url);
   await sendMail(data.email, "QR код вашего сертификата", qr);
 }
 
 export async function acceptCertificate(encryptId: string) {
-  const id = decrypt(encryptId);
+  let id;
+  try {
+    id = decrypt(encryptId);
+  } catch (error) {
+    throw new Error("Данные не корректны");
+  }
   const certificate: Certificate | null = await myDataSource
     .getRepository(Certificate)
     .findOneBy({ id });

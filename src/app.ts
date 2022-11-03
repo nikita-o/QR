@@ -1,4 +1,5 @@
-import { HTTP_HOST, HTTP_PORT } from "./config/index";
+import fs from "fs";
+import { HTTP_HOST, HTTP_PORT, initkey } from "./config/index";
 import express, { Express } from "express";
 import { myDataSource } from "./app-data-source";
 import { router } from "./certificate/certificate.controller";
@@ -8,6 +9,9 @@ import path from "path";
 //   console.log(`Server: http://${HTTP_HOST}:${HTTP_PORT}`);
 // });
 async function start() {
+  const keys = JSON.parse(fs.readFileSync("src/config/key.json", "utf8"));
+  initkey(keys);
+
   const app: Express = express();
 
   //app.use(logger("dev"));

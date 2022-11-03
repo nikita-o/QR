@@ -10,15 +10,12 @@ router
   })
 
   .get("/close-certificate", async (req: Request, res: Response) => {
-    console.log(req.query);
+    // console.log(req.query);
     try {
       const certificate = await acceptCertificate(String(req.query.encryptId));
-      // res.send(certificate);
       res.render("certificate", { certificate });
-      // res.send("True");
     } catch (error) {
-      console.log(error);
-
+      // console.log(error);
       res.render("error", { error });
     }
   });
