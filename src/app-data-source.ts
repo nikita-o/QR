@@ -9,7 +9,6 @@ export const myDataSource = new DataSource({
   password: "root",
   database: "qr",
   entities: [Certificate],
-  //   autoLoadEntities: true,
-  logging: true,
+  logging: false,
   synchronize: true,
 });

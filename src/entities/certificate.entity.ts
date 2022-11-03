@@ -14,9 +14,9 @@ export class Certificate {
   @Column()
   restaurant!: string;
 
-  @Column()
+  @Column({ default: false })
   accept!: boolean;
 
-  @Column()
+  @Column({ default: () => "CURRENT_TIMESTAMP" })
   create_date!: Date;
 }

@@ -11,20 +11,12 @@ export function encrypt(data: string): string {
 }
 
 export function decrypt(data: string): string {
-  console.log("decrypt");
-  console.log(SecurityKey);
-  console.log(initVector);
-
-  console.log(data);
   const decipher = crypto.createDecipheriv(
     "aes-256-cbc",
     SecurityKey,
     initVector
   );
-  console.log(decipher);
   let decryptedData = decipher.update(data, "hex", "utf-8");
-  console.log(decryptedData);
   decryptedData += decipher.final("utf8");
-  console.log(decryptedData);
   return decryptedData;
 }

@@ -1,43 +1,39 @@
+import { Certificate } from "./../entities/certificate.entity";
 import { initVector, ngrockHost } from "./../config/index";
 import { encrypt, decrypt } from "../utils/crypt";
 import { generateQR } from "../utils/qr-generate";
 import { sendMail } from "../utils/send-mail";
-import { randomUUID } from "crypto";
-import fs from "fs";
+import { myDataSource } from "../app-data-source";
 
 export async function createCertificate(data: any) {
-  const storage: any = JSON.parse(fs.readFileSync("storage.json", "utf8"));
-  data.id = randomUUID();
   data.accept = false;
   data.createDate = Date.now();
 
-  storage.certificate.push(data);
-  fs.writeFileSync("storage.json", JSON.stringify(storage));
+  await myDataSource.getRepository(Certificate).save(data);
+
   const encryptId = encrypt(data.id); //должна быть строка
   const url = `${ngrockHost}/close-certificate/?encryptId=${encryptId}`;
   const qr: Buffer = await generateQR(url);
   await sendMail(data.email, "QR код вашего сертификата", qr);
-  console.log(storage);
 }
 
-export function acceptCertificate(encryptId: string) {
-  const storage: any = JSON.parse(fs.readFileSync("storage.json", "utf8"));
+export async function acceptCertificate(encryptId: string) {
   const id = decrypt(encryptId);
-  const idx = storage.certificate.findIndex((el: any) => el.id === id);
-  if (idx === -1) {
+  const certificate: Certificate | null = await myDataSource
+    .getRepository(Certificate)
+    .findOneBy({ id });
+  if (!certificate) {
     return { error: "Данные не корректны" };
   }
-  const data = storage.certificate[idx];
-  if (data.accept) {
+
+  if (certificate.accept) {
     return { error: "Сертификат уже погашен" };
   }
-  data.accept = true;
-  console.log(storage);
-  fs.writeFileSync("storage.json", JSON.stringify(storage));
-
+  certificate.accept = true;
+  await myDataSource.getRepository(Certificate).save(certificate);
   return {
-    email: data.email,
-    price: data.price,
-    restaurant: data.restaurant,
+    email: certificate.email,
+    price: certificate.price,
+    restaurant: certificate.restaurant,
   };
 }

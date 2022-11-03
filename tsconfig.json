@@ -6,6 +6,7 @@
     "baseUrl": ".",
     "skipLibCheck": true,
     "experimentalDecorators": true,
-    "strict": true
+    "strict": true,
+    "emitDecoratorMetadata": true
   }
 }

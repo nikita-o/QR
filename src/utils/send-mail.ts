@@ -1,3 +1,4 @@
+import { email, emailpass } from "./../config/index";
 import nodemailer from "nodemailer";
 
 export async function sendMail(recipient: string, message: string, qr: Buffer) {
@@ -5,21 +6,19 @@ export async function sendMail(recipient: string, message: string, qr: Buffer) {
     service: "smtp.mail.ru",
     host: "smtp.mail.ru",
     auth: {
-      user: "@mail.ru", // generated ethereal user
-      pass: "", // generated ethereal password
+      user: email, // generated ethereal user
+      pass: emailpass, // generated ethereal password
     },
   });
 
   let info = await transporter.sendMail({
-    from: "@mail.ru",
+    from: email,
     to: recipient,
-    subject: "message",
-    // text: message,
+    subject: "Certificate",
     html: message,
     attachments: [
       {
-        // filename and content type is derived from path
-        filename: "foo.png",
+        filename: "certificate.png",
         content: qr,
       },
     ],

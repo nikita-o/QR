@@ -9,8 +9,9 @@ router
     res.send("Create");
   })
 
-  .get("/close-certificate", (req: Request, res: Response) => {
+  .get("/close-certificate", async (req: Request, res: Response) => {
     console.log(req.query);
-    res.send(acceptCertificate(String(req.query.encryptId)));
+    const certificate = await acceptCertificate(String(req.query.encryptId));
+    res.send(certificate);
     // res.send("True");
   });
