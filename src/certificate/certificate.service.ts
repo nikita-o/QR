@@ -5,15 +5,15 @@ import { generateQR } from "../utils/qr-generate";
 import { sendMail } from "../utils/send-mail";
 import { myDataSource } from "../app-data-source";
 
-export async function createCertificate(data: any) {
+export async function createCertificate(data: any): Promise<void> {
   data.accept = false;
   data.createDate = Date.now();
 
   await myDataSource.getRepository(Certificate).save(data);
 
-  const encryptId = encrypt(data.id); //должна быть строка
+  const encryptId = encrypt(data.id);
   const url = `${ngrockHost}/check-certificate/?encryptId=${encryptId}`;
-  console.log(url);
+  // console.log(url);
   const qr: Buffer = await generateQR(url);
   try {
     await sendMail(data.email, "QR код вашего сертификата", qr);
@@ -22,8 +22,8 @@ export async function createCertificate(data: any) {
   }
 }
 
-export async function acceptCertificate(encryptId: string) {
-  let id;
+export async function acceptCertificate(encryptId: string): Promise<void> {
+  let id: string;
   try {
     id = decrypt(encryptId);
   } catch (error) {
@@ -43,8 +43,8 @@ export async function acceptCertificate(encryptId: string) {
   await myDataSource.getRepository(Certificate).save(certificate);
 }
 
-export async function checkCertificate(encryptId: string) {
-  let id;
+export async function checkCertificate(encryptId: string): Promise<any> {
+  let id: string;
   try {
     id = decrypt(encryptId);
   } catch (error) {
