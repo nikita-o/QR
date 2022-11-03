@@ -1,4 +1,4 @@
-import {Request, Response, Router} from "express";
+import { Request, Response, Router } from "express";
 import { createCertificate, acceptCertificate } from "./certificate.service";
 
 export const router: Router = Router();
@@ -9,8 +9,8 @@ router
     res.send("Create");
   })
 
-  .get("/close-certificate/:encryptId", (req: Request, res: Response) => {
-    console.log(req.params);
-    res.send(acceptCertificate(req.params.encryptId));
+  .get("/close-certificate", (req: Request, res: Response) => {
+    console.log(req.query);
+    res.send(acceptCertificate(String(req.query.encryptId)));
     // res.send("True");
   });

@@ -1,17 +1,17 @@
-import {createTransport, Transporter} from "nodemailer";
+import nodemailer from "nodemailer";
 
-export async function sendMail(recipient: string, message: string, qr: Buffer): Promise<void> {
-  const transporter: Transporter = createTransport({
+export async function sendMail(recipient: string, message: string, qr: Buffer) {
+  let transporter = nodemailer.createTransport({
     service: "smtp.mail.ru",
     host: "smtp.mail.ru",
     auth: {
-      user: "usermail", // generated ethereal user
-      pass: "userpass", // generated ethereal password
+      user: "@mail.ru", // generated ethereal user
+      pass: "", // generated ethereal password
     },
   });
 
-  await transporter.sendMail({
-    from: "usermail",
+  let info = await transporter.sendMail({
+    from: "@mail.ru",
     to: recipient,
     subject: "message",
     // text: message,
@@ -19,7 +19,7 @@ export async function sendMail(recipient: string, message: string, qr: Buffer): 
     attachments: [
       {
         // filename and content type is derived from path
-        filename: "filename.png",
+        filename: "foo.png",
         content: qr,
       },
     ],

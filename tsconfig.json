@@ -5,6 +5,7 @@
     "outDir": "dist",
     "baseUrl": ".",
     "skipLibCheck": true,
+    "experimentalDecorators": true,
     "strict": true
   }
 }
