@@ -7,7 +7,7 @@ export const myDataSource = new DataSource({
   port: 3306,
   username: "root",
   password: "root",
-  database: "qr",
+  database: "certificate",
   entities: [Certificate],
   logging: false,
   synchronize: true,

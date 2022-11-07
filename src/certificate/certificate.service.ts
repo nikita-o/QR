@@ -1,8 +1,8 @@
-import { Certificate } from "./../entities/certificate.entity";
-import { initVector, ngrockHost } from "./../config/index";
+import { Certificate } from "../entities/certificate.entity";
+import { HTTP_HOST } from "../config/index";
 import { encrypt, decrypt } from "../utils/crypt";
 import { generateQR } from "../utils/qr-generate";
-import { sendMail } from "../utils/send-mail";
+import { sendQrToMail } from "../utils/send-mail";
 import { myDataSource } from "../app-data-source";
 
 export async function createCertificate(data: any): Promise<void> {
@@ -12,11 +12,10 @@ export async function createCertificate(data: any): Promise<void> {
   await myDataSource.getRepository(Certificate).save(data);
 
   const encryptId = encrypt(data.id);
-  const url = `${ngrockHost}/check-certificate/?encryptId=${encryptId}`;
-  // console.log(url);
+  const url = `${HTTP_HOST}/check-certificate/?encryptId=${encryptId}`;
   const qr: Buffer = await generateQR(url);
   try {
-    await sendMail(data.email, "QR код вашего сертификата", qr);
+    await sendQrToMail(data.email, "QR код вашего сертификата", qr);
   } catch (error) {
     throw new Error("Несуществующий email");
   }

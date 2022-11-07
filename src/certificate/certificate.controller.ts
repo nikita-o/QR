@@ -1,4 +1,4 @@
-import { ngrockHost } from "./../config/index";
+import { HTTP_HOST } from "../config/index";
 import { Request, Response, Router } from "express";
 import {
   createCertificate,
@@ -19,16 +19,14 @@ router
   })
 
   .get("/check-certificate", async (req: Request, res: Response) => {
-    // console.log(req.query);
     try {
       const certificate = await checkCertificate(String(req.query.encryptId));
       res.render("certificate", {
         certificate,
-        urlAccept: `${ngrockHost}/close-certificate/?encryptId=${req.query.encryptId}`,
+        urlAccept: `${HTTP_HOST}/close-certificate/?encryptId=${req.query.encryptId}`,
         encryptId: req.query.encryptId,
       });
     } catch (error) {
-      // console.log(error);
       res.render("error", { error });
     }
   })
@@ -38,7 +36,6 @@ router
       await acceptCertificate(String(req.query.encryptId));
       res.send("ok");
     } catch (error) {
-      // console.log(error);
       res.render("error", { error });
     }
   });
