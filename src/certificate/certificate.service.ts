@@ -1,8 +1,8 @@
 import { Certificate } from "../entities/certificate.entity";
 import { HTTP_HOST } from "../config/index";
 import { encrypt, decrypt } from "../utils/crypt";
-import { generateQR } from "../utils/qr-generate";
-import { sendQrToMail } from "../utils/send-mail";
+import { generateQR } from "../utils/qr";
+import { sendQrToMail } from "../utils/mail";
 import { myDataSource } from "../app-data-source";
 
 export async function createCertificate(data: any): Promise<void> {

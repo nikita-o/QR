@@ -26,7 +26,7 @@ async function start() {
       console.error("Error during Data Source initialization:", err);
     });
   app.listen(HTTP_PORT, () => {
-    console.log(`Server: http://${HTTP_HOST}:${HTTP_PORT}`);
+    console.log(`Server: ${HTTP_HOST}`);
   });
 }
 start();
