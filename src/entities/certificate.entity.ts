@@ -18,5 +18,5 @@ export class Certificate {
   accept!: boolean;
 
   @Column({ default: () => "CURRENT_TIMESTAMP" })
-  create_date!: Date;
+  createDate!: Date;
 }

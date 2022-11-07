@@ -4,14 +4,20 @@ import { encrypt, decrypt } from "../utils/crypt";
 import { generateQR } from "../utils/qr";
 import { sendQrToMail } from "../utils/mail";
 import { myDataSource } from "../app-data-source";
+import type { CreateCertificateDto } from "./dto/create-certificate.dto";
 
-export async function createCertificate(data: any): Promise<void> {
-  data.accept = false;
-  data.createDate = Date.now();
+export async function createCertificate(
+  data: CreateCertificateDto,
+): Promise<void> {
+  const { id }: { id: string } = await myDataSource
+    .getRepository(Certificate)
+    .save({
+      ...data,
+      accept: false,
+      createDate: Date.now(),
+    });
 
-  await myDataSource.getRepository(Certificate).save(data);
-
-  const encryptId = encrypt(data.id);
+  const encryptId = encrypt(id);
   const url = `${HTTP_HOST}/check-certificate/?encryptId=${encryptId}`;
   const qr: Buffer = await generateQR(url);
   try {
@@ -60,7 +66,7 @@ export async function checkCertificate(encryptId: string): Promise<any> {
     email: certificate.email,
     price: certificate.price,
     restaurant: certificate.restaurant,
-    create_date: certificate.create_date
+    createDate: certificate.createDate
       .toISOString()
       .replace(/T/, " ")
       .replace(/\..+/, ""),

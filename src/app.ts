@@ -1,15 +1,13 @@
-import fs from "fs";
-import { HTTP_HOST, HTTP_PORT, initkey } from "./config/index";
-import express, { Express } from "express";
-import { myDataSource } from "./app-data-source";
-import { router } from "./certificate/certificate.controller";
+import express from "express";
+import type { Express } from "express";
 import path from "path";
 import { config } from "dotenv";
+import { router } from "./certificate/certificate.controller";
+import { myDataSource } from "./app-data-source";
+import { HTTP_HOST, HTTP_PORT } from "./config/index";
 
-async function start() {
+async function start(): Promise<void> {
   config();
-  const keys = JSON.parse(fs.readFileSync("src/config/key.json", "utf8"));
-  initkey(keys);
 
   const app: Express = express();
 
@@ -19,14 +17,16 @@ async function start() {
   app.set("views", path.join("src", "views"));
 
   app.use("/", router);
-  await myDataSource
+  myDataSource
     .initialize()
-    .then(() => {})
+    .then(() => {
+      app.listen(HTTP_PORT, () => {
+        console.log(`Server: ${HTTP_HOST}`);
+      });
+    })
     .catch((err: any) => {
       console.error("Error during Data Source initialization:", err);
     });
-  app.listen(HTTP_PORT, () => {
-    console.log(`Server: ${HTTP_HOST}`);
-  });
 }
+
 start();

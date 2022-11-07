@@ -1,5 +1,6 @@
+import { Router } from "express";
+import type { Request, Response } from "express";
 import { HTTP_HOST } from "../config/index";
-import { Request, Response, Router } from "express";
 import {
   createCertificate,
   acceptCertificate,

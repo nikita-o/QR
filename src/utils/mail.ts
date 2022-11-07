@@ -1,5 +1,5 @@
-import { email, emailPass } from "../config/index";
 import nodemailer from "nodemailer";
+import { email, emailPass } from "../config/index";
 
 const transporter = nodemailer.createTransport({
   service: "smtp.mail.ru",
@@ -10,7 +10,11 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export async function sendQrToMail(recipient: string, message: string, qr: Buffer) {
+export async function sendQrToMail(
+  recipient: string,
+  message: string,
+  qr: Buffer,
+) {
   await transporter.sendMail({
     from: email,
     to: recipient,

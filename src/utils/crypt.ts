@@ -1,5 +1,5 @@
-import { securityKey, initVector } from "../config/index";
 import crypto from "crypto";
+import { securityKey, initVector } from "../config/index";
 
 export function encrypt(data: string): string {
   const cipher = crypto.createCipheriv("aes-256-cbc", securityKey, initVector);
@@ -9,7 +9,11 @@ export function encrypt(data: string): string {
 }
 
 export function decrypt(data: string): string {
-  const decipher = crypto.createDecipheriv("aes-256-cbc", securityKey, initVector);
+  const decipher = crypto.createDecipheriv(
+    "aes-256-cbc",
+    securityKey,
+    initVector,
+  );
   let decryptedData = decipher.update(data, "hex", "utf-8");
   decryptedData += decipher.final("utf8");
   return decryptedData;
