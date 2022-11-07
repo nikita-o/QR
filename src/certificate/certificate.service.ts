@@ -7,19 +7,21 @@ import { myDataSource } from "../app-data-source";
 import type { CreateCertificateDto } from "./dto/create-certificate.dto";
 
 export async function createCertificate(
-  data: CreateCertificateDto,
+  data: CreateCertificateDto
 ): Promise<void> {
   const { id }: { id: string } = await myDataSource
     .getRepository(Certificate)
     .save({
-      ...data,
+      email: data.email,
+      price: data.price,
+      restaurant: data.restaurant,
       accept: false,
-      createDate: Date.now(),
     });
 
   const encryptId = encrypt(id);
   const url = `${HTTP_HOST}/check-certificate/?encryptId=${encryptId}`;
   const qr: Buffer = await generateQR(url);
+
   try {
     await sendQrToMail(data.email, "QR код вашего сертификата", qr);
   } catch (error) {
