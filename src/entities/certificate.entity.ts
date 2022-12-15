@@ -2,10 +2,10 @@ import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Certificate {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn()
   id!: string;
 
-  @Column()
+  @Column({ nullable: true })
   email!: string;
 
   @Column()
@@ -15,8 +15,11 @@ export class Certificate {
   restaurant!: string;
 
   @Column({ default: false })
-  accept!: boolean;
+  acceptUsing!: boolean;
 
   @Column({ default: () => "CURRENT_TIMESTAMP" })
   createDate!: Date;
+
+  @Column({ default: false })
+  acceptPayment!: boolean;
 }

@@ -4,7 +4,7 @@ import { HTTP_HOST } from "../config/index";
 import {
   createCertificate,
   acceptCertificate,
-  checkCertificate,
+  checkCertificate, acceptTransaction, buyCertificate,
 } from "./certificate.service";
 
 export const router: Router = Router();
@@ -13,9 +13,27 @@ router
   .post("/create-certificate", async (req: Request, res: Response) => {
     try {
       await createCertificate(req.body);
-      res.send("Create");
+      res.send();
     } catch (error) {
       res.render("error", { error });
+    }
+  })
+
+  .post("/buy-certificate", async (req: Request, res: Response) => {
+    try {
+      const url = await buyCertificate(req.body);
+      res.send(url);
+    } catch (error) {
+      res.render("error", { error });
+    }
+  })
+
+  .get("/accept-buy-certificate", async (req: Request, res: Response) => {
+    try {
+      const email: string = await acceptTransaction(req.query.orderId as string);
+      res.send(`Транзакция подтверждена, сертификат отправлен на почту ${email}`);
+    } catch (error) {
+
     }
   })
 

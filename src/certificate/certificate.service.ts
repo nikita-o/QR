@@ -1,53 +1,88 @@
 import { Certificate } from "../entities/certificate.entity";
 import { HTTP_HOST } from "../config/index";
-import { encrypt, decrypt } from "../utils/crypt";
-import { generateQR } from "../utils/qr";
-import { sendQrToMail } from "../utils/mail";
+import { encrypt, decrypt } from "../utils/crypt.util";
+import { generateQR } from "../utils/qr.util";
+import { sendQrToMail } from "../utils/mail.util";
 import { myDataSource } from "../app-data-source";
 import type { CreateCertificateDto } from "./dto/create-certificate.dto";
+import { checkStatusCertificate, registerCertificate } from "../utils/sberbank.util";
+import { Transaction } from "../entities/transaction.entity";
+import { BuyCertificateDto } from "./dto/buy-certificate.dto";
 
 export async function createCertificate(
   data: CreateCertificateDto
 ): Promise<void> {
-  const { id }: { id: string } = await myDataSource
+  if (data.price < 0) {
+    throw new Error('Нет');
+  }
+
+  await myDataSource
     .getRepository(Certificate)
     .save({
-      email: data.email,
       price: data.price,
       restaurant: data.restaurant,
-      accept: false,
+    });
+}
+
+export async function buyCertificate(data: BuyCertificateDto) {
+  const certificate: Certificate | null = await myDataSource
+    .getRepository(Certificate)
+    .findOneBy({ id: data.idCertificate });
+
+  if (!certificate) {
+    throw new Error('Нет');
+  }
+
+  //  Чек email...
+  await myDataSource
+    .getRepository(Certificate)
+    .save({ id: data.idCertificate, email: data.email });
+
+  const order = await registerCertificate(certificate.id, certificate.price * 100);
+
+  await myDataSource
+    .getRepository(Transaction)
+    .save({
+      orderId: order.orderId,
+      formUrl: order.formUrl,
+      certificateId: certificate.id,
     });
 
-  const encryptId = encrypt(id);
+  return order.formUrl;
+}
+
+export async function acceptTransaction(orderId: string) {
+  const transaction: Transaction | null = await myDataSource
+    .getRepository(Transaction)
+    .findOne({
+      where: { orderId },
+      relations: { certificate: true },
+    });
+
+  if (!transaction) {
+    throw new Error('Нет');
+  }
+
+  await checkStatusCertificate(transaction.certificate.id);
+
+  await myDataSource
+    .getRepository(Certificate)
+    .save({
+      id: transaction.certificateId,
+      acceptPayment: true,
+    });
+
+  const encryptId = encrypt(transaction.certificateId + '');
   const url = `${HTTP_HOST}/check-certificate/?encryptId=${encryptId}`;
   const qr: Buffer = await generateQR(url);
 
   try {
-    await sendQrToMail(data.email, "QR код вашего сертификата", qr);
+    await sendQrToMail(transaction.certificate.email, "QR код вашего сертификата", qr);
   } catch (error) {
     throw new Error("Несуществующий email");
   }
-}
 
-export async function acceptCertificate(encryptId: string): Promise<void> {
-  let id: string;
-  try {
-    id = decrypt(encryptId);
-  } catch (error) {
-    throw new Error("Данные не корректны");
-  }
-  const certificate: Certificate | null = await myDataSource
-    .getRepository(Certificate)
-    .findOneBy({ id });
-  if (!certificate) {
-    throw new Error("Данные не корректны");
-  }
-
-  if (certificate.accept) {
-    throw new Error("Сертификат уже погашен");
-  }
-  certificate.accept = true;
-  await myDataSource.getRepository(Certificate).save(certificate);
+  return transaction.certificate.email;
 }
 
 export async function checkCertificate(encryptId: string): Promise<any> {
@@ -72,6 +107,27 @@ export async function checkCertificate(encryptId: string): Promise<any> {
       .toISOString()
       .replace(/T/, " ")
       .replace(/\..+/, ""),
-    accept: certificate.accept,
+    accept: certificate.acceptUsing,
   };
+}
+
+export async function acceptCertificate(encryptId: string): Promise<void> {
+  let id: string;
+  try {
+    id = decrypt(encryptId);
+  } catch (error) {
+    throw new Error("Данные не корректны");
+  }
+  const certificate: Certificate | null = await myDataSource
+    .getRepository(Certificate)
+    .findOneBy({ id });
+  if (!certificate) {
+    throw new Error("Данные не корректны");
+  }
+
+  if (certificate.acceptUsing) {
+    throw new Error("Сертификат уже погашен");
+  }
+  certificate.acceptUsing = true;
+  await myDataSource.getRepository(Certificate).save(certificate);
 }
