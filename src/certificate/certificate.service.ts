@@ -4,85 +4,59 @@ import { encrypt, decrypt } from "../utils/crypt.util";
 import { generateQR } from "../utils/qr.util";
 import { sendQrToMail } from "../utils/mail.util";
 import { myDataSource } from "../app-data-source";
-import type { CreateCertificateDto } from "./dto/create-certificate.dto";
 import { checkStatusCertificate, registerCertificate } from "../utils/sberbank.util";
-import { Transaction } from "../entities/transaction.entity";
 import { BuyCertificateDto } from "./dto/buy-certificate.dto";
-
-export async function createCertificate(
-  data: CreateCertificateDto
-): Promise<void> {
-  if (data.price < 0) {
-    throw new Error('Нет');
-  }
-
-  await myDataSource
-    .getRepository(Certificate)
-    .save({
-      price: data.price,
-      restaurant: data.restaurant,
-    });
-}
+//import nanoid = require('nanoid');
+import { nanoid } from 'nanoid'
 
 export async function buyCertificate(data: BuyCertificateDto) {
-  const certificate: Certificate | null = await myDataSource
-    .getRepository(Certificate)
-    .findOneBy({ id: data.idCertificate });
+  const id = nanoid();
 
-  if (!certificate) {
-    throw new Error('Нет');
-  }
-
-  //  Чек email...
-  await myDataSource
-    .getRepository(Certificate)
-    .save({ id: data.idCertificate, email: data.email });
-
-  const order = await registerCertificate(certificate.id, certificate.price * 100);
+  const order = await registerCertificate(id, data.price * 100);
 
   await myDataSource
-    .getRepository(Transaction)
+    .getRepository(Certificate)
     .save({
+      id,
       orderId: order.orderId,
       formUrl: order.formUrl,
-      certificateId: certificate.id,
+      restaurant: data.restaurant,
+      price: data.price,
+      email: data.email,
     });
 
   return order.formUrl;
 }
 
 export async function acceptTransaction(orderId: string) {
-  const transaction: Transaction | null = await myDataSource
-    .getRepository(Transaction)
-    .findOne({
-      where: { orderId },
-      relations: { certificate: true },
-    });
+  const certificate: Certificate | null = await myDataSource
+    .getRepository(Certificate)
+    .findOneBy({ orderId });
 
-  if (!transaction) {
+  if (!certificate) {
     throw new Error('Нет');
   }
 
-  await checkStatusCertificate(transaction.certificate.id);
+  await checkStatusCertificate(certificate.id);
 
   await myDataSource
     .getRepository(Certificate)
     .save({
-      id: transaction.certificateId,
+      id: certificate.id,
       acceptPayment: true,
     });
 
-  const encryptId = encrypt(transaction.certificateId + '');
+  const encryptId = encrypt(certificate.id);
   const url = `${HTTP_HOST}/check-certificate/?encryptId=${encryptId}`;
   const qr: Buffer = await generateQR(url);
 
   try {
-    await sendQrToMail(transaction.certificate.email, "QR код вашего сертификата", qr);
+    await sendQrToMail(certificate.email, "QR код вашего сертификата", qr);
   } catch (error) {
     throw new Error("Несуществующий email");
   }
 
-  return transaction.certificate.email;
+  return certificate.email;
 }
 
 export async function checkCertificate(encryptId: string): Promise<any> {

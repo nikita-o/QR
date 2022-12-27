@@ -2,7 +2,6 @@ import { Router } from "express";
 import type { Request, Response } from "express";
 import { HTTP_HOST } from "../config/index";
 import {
-  createCertificate,
   acceptCertificate,
   checkCertificate, acceptTransaction, buyCertificate,
 } from "./certificate.service";
@@ -10,19 +9,18 @@ import {
 export const router: Router = Router();
 
 router
-  .post("/create-certificate", async (req: Request, res: Response) => {
-    try {
-      await createCertificate(req.body);
-      res.send();
-    } catch (error) {
-      res.render("error", { error });
-    }
+  .get('/test', async (req: Request, res: Response) => {
+    console.log(req.body);
+    console.log(req.query);
+    console.log(req.params);
+    res.send();
   })
 
   .post("/buy-certificate", async (req: Request, res: Response) => {
     try {
       const url = await buyCertificate(req.body);
-      res.send(url);
+      //res.send(url);
+      res.redirect(url);
     } catch (error) {
       res.render("error", { error });
     }
@@ -33,7 +31,7 @@ router
       const email: string = await acceptTransaction(req.query.orderId as string);
       res.send(`Транзакция подтверждена, сертификат отправлен на почту ${email}`);
     } catch (error) {
-
+      res.render("error", { error });
     }
   })
 

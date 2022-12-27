@@ -1,9 +1,15 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, PrimaryColumn } from "typeorm";
 
 @Entity()
 export class Certificate {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   id!: string;
+
+  @Column()
+  orderId!: string;
+
+  @Column()
+  formUrl!: string;
 
   @Column({ nullable: true })
   email!: string;

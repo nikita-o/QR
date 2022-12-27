@@ -6,7 +6,7 @@ export function registerCertificate(orderNumber: string, amount: number) {
         userName: sberLogin,
         password: sberPass,
         returnUrl: `${HTTP_HOST}/accept-buy-certificate`,
-        failUrl: `${HTTP_HOST}/fail-payment`,
+        // failUrl: `${HTTP_HOST}/fail-payment`,
         amount,
         orderNumber,
     }, {
