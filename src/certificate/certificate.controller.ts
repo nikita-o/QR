@@ -43,7 +43,7 @@ router
 
   .get("/check-certificate", async (req: Request, res: Response) => {
     try {
-      const certificate = await checkCertificate(String(req.query.encryptId));
+      const certificate: Certificate = await checkCertificate(String(req.query.encryptId));
       res.send(certificate);
     } catch (error: any) {
       res
@@ -60,6 +60,6 @@ router
     } catch (error: any) {
       res
         .status(error.status || 500)
-        .send({ message: error.message || "Ошибка!" });
+        .send({ error: { message: error.message || "Ошибка!" } });
     }
   });

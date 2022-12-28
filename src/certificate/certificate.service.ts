@@ -1,13 +1,13 @@
-import { Certificate } from "../entities/certificate.entity";
-import { hostFront, HTTP_HOST } from "../config/index";
-import { encrypt, decrypt } from "../utils/crypt.util";
+import { Certificate, EStatusCertificate } from "../entities/certificate.entity";
+import { hostFront } from "../config/index";
+import { decrypt, encrypt } from "../utils/crypt.util";
 import { generateQR } from "../utils/qr.util";
 import { sendQrToMail } from "../utils/mail.util";
 import { myDataSource } from "../app-data-source";
 import { checkStatusCertificate, registerCertificate } from "../utils/sberbank.util";
 import { BuyCertificateDto } from "./dto/buy-certificate.dto";
 //import nanoid = require('nanoid');
-import { nanoid } from 'nanoid'
+import { nanoid } from "nanoid";
 
 export async function buyCertificate(data: BuyCertificateDto) {
   const id = nanoid();
@@ -23,6 +23,7 @@ export async function buyCertificate(data: BuyCertificateDto) {
       restaurant: data.restaurant,
       price: data.price,
       email: data.email,
+      status: EStatusCertificate.WaitPayment,
     });
 
   return order.formUrl;
@@ -43,7 +44,7 @@ export async function acceptTransaction(orderId: string) {
     .getRepository(Certificate)
     .save({
       id: certificate.id,
-      acceptPayment: true,
+      status: EStatusCertificate.Free,
     });
 
   const encryptId = encrypt(certificate.id);
@@ -77,11 +78,12 @@ export async function checkCertificate(encryptId: string): Promise<any> {
     email: certificate.email,
     price: certificate.price,
     restaurant: certificate.restaurant,
+    status: certificate.status,
     createDate: certificate.createDate
       .toISOString()
       .replace(/T/, " ")
-      .replace(/\..+/, ""),
-    accept: certificate.acceptUsing,
+      .replace(/\..+/, "")
+      .slice(0, -8),
   };
 }
 
@@ -99,9 +101,9 @@ export async function acceptCertificate(encryptId: string): Promise<Certificate>
     throw new Error("Данные не корректны");
   }
 
-  if (certificate.acceptUsing) {
+  if (certificate.status === EStatusCertificate.Close) {
     throw new Error("Сертификат уже погашен");
   }
-  certificate.acceptUsing = true;
+  certificate.status = EStatusCertificate.Close;
   return await myDataSource.getRepository(Certificate).save(certificate);
 }
