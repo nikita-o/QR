@@ -1,5 +1,5 @@
 import { Certificate } from "../entities/certificate.entity";
-import { HTTP_HOST } from "../config/index";
+import { hostFront, HTTP_HOST } from "../config/index";
 import { encrypt, decrypt } from "../utils/crypt.util";
 import { generateQR } from "../utils/qr.util";
 import { sendQrToMail } from "../utils/mail.util";
@@ -47,7 +47,7 @@ export async function acceptTransaction(orderId: string) {
     });
 
   const encryptId = encrypt(certificate.id);
-  const url = `${HTTP_HOST}/check-certificate/?encryptId=${encryptId}`;
+  const url = `${hostFront}/accept-certificate.html?id=${encryptId}`;
   const qr: Buffer = await generateQR(url);
 
   try {
@@ -85,7 +85,7 @@ export async function checkCertificate(encryptId: string): Promise<any> {
   };
 }
 
-export async function acceptCertificate(encryptId: string): Promise<void> {
+export async function acceptCertificate(encryptId: string): Promise<Certificate> {
   let id: string;
   try {
     id = decrypt(encryptId);
@@ -103,5 +103,5 @@ export async function acceptCertificate(encryptId: string): Promise<void> {
     throw new Error("Сертификат уже погашен");
   }
   certificate.acceptUsing = true;
-  await myDataSource.getRepository(Certificate).save(certificate);
+  return await myDataSource.getRepository(Certificate).save(certificate);
 }

@@ -10,7 +10,7 @@ export const emailPass = env.EMAIL_PASS;
 export const urlSberPayment = env.URL_SBER_PAYMENT || "https://3dsec.sberbank.ru/payment/rest";
 export const sberLogin = env.SBER_LOGIN || '';
 export const sberPass = env.SBER_PASS || '';
-
+export const hostFront = env.SBER_PASS || 'localhost:8081';
 
 
 
