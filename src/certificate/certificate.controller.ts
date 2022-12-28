@@ -3,13 +3,15 @@ import type { Request, Response } from "express";
 import { HTTP_HOST } from "../config/index";
 import {
   acceptCertificate,
-  checkCertificate, acceptTransaction, buyCertificate,
+  checkCertificate,
+  acceptTransaction,
+  buyCertificate,
 } from "./certificate.service";
 
 export const router: Router = Router();
 
 router
-  .get('/test', async (req: Request, res: Response) => {
+  .get("/test", async (req: Request, res: Response) => {
     console.log(req.body);
     console.log(req.query);
     console.log(req.params);
@@ -28,8 +30,12 @@ router
 
   .get("/accept-buy-certificate", async (req: Request, res: Response) => {
     try {
-      const email: string = await acceptTransaction(req.query.orderId as string);
-      res.send(`Транзакция подтверждена, сертификат отправлен на почту ${email}`);
+      const email: string = await acceptTransaction(
+        req.query.orderId as string
+      );
+      res.send(
+        `Транзакция подтверждена, сертификат отправлен на почту ${email}`
+      );
     } catch (error) {
       res.render("error", { error });
     }
