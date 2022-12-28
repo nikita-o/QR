@@ -1,5 +1,12 @@
 import { Entity, Column, PrimaryGeneratedColumn, PrimaryColumn } from "typeorm";
 
+export enum EStatusCertificate {
+  Free,
+  Close,
+  WaitPayment,
+  Expired,
+}
+
 @Entity()
 export class Certificate {
   @PrimaryColumn()
@@ -20,12 +27,13 @@ export class Certificate {
   @Column()
   restaurant!: string;
 
-  @Column({ default: false })
-  acceptUsing!: boolean;
+  @Column({
+    type: 'enum',
+    enum: EStatusCertificate,
+    default: EStatusCertificate.WaitPayment,
+  })
+  status!: EStatusCertificate;
 
   @Column({ default: () => "CURRENT_TIMESTAMP" })
   createDate!: Date;
-
-  @Column({ default: false })
-  acceptPayment!: boolean;
 }
