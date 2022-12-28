@@ -2,8 +2,7 @@ import nodemailer from "nodemailer";
 import { email, emailPass } from "../config/index";
 
 const transporter = nodemailer.createTransport({
-  service: "smtp.mail.ru",
-  host: "smtp.mail.ru",
+  service: "Yandex",
   auth: {
     user: email,
     pass: emailPass,
