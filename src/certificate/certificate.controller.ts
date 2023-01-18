@@ -3,7 +3,7 @@ import type { Request, Response } from "express";
 import { hostFront, HTTP_HOST } from "../config/index";
 import {
   acceptCertificate,
-  checkCertificate, acceptTransaction, buyCertificate,
+  checkCertificate, acceptTransaction, buyCertificate, getCertificatesList,
 } from "./certificate.service";
 import { Certificate } from "../entities/certificate.entity";
 
@@ -62,4 +62,20 @@ router
         .status(error.status || 500)
         .send({ error: { message: error.message || "Ошибка!" } });
     }
+  })
+
+  // views:
+  .get("/table-certificates", async (req: Request, res: Response) => {
+    const page: number = Number(req.query.page);
+    const {certificates, totalCount, totalPages } = await getCertificatesList(page);
+    console.log(certificates);
+    console.log(totalCount);
+    console.log(totalPages);
+    res.render('table-certificates', {
+      title: 'Hello',
+      currentPage: page,
+      certificates,
+      totalCount,
+      totalPages,
+    });
   });

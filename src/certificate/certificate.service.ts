@@ -107,3 +107,18 @@ export async function acceptCertificate(encryptId: string): Promise<Certificate>
   certificate.status = EStatusCertificate.Close;
   return await myDataSource.getRepository(Certificate).save(certificate);
 }
+
+export async function getCertificatesList(page: number): Promise<any> {
+  const pageSize = 25;
+  const [certificates, totalCount]: [Certificate[], number] = await myDataSource.getRepository(Certificate).findAndCount({
+    skip: page * pageSize,
+    take: pageSize,
+    order: { restaurant: 'ASC' },
+    select: ['restaurant', 'status', 'price', 'email', 'createDate'],
+  });
+  return {
+    certificates,
+    totalCount,
+    totalPages: Math.ceil(totalCount / pageSize),
+  }
+}

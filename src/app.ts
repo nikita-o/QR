@@ -6,11 +6,21 @@ import { router } from "./certificate/certificate.controller";
 import { myDataSource } from "./app-data-source";
 import { HTTP_HOST, HTTP_PORT } from "./config/index";
 import cors from "cors";
+import * as https from "https";
+import fs from "fs";
 
 async function start(): Promise<void> {
   config();
 
+  // For https
+  const options = {
+    key: fs.readFileSync('./ssl/privatekey.pem'),
+    cert: fs.readFileSync('./ssl/certificate.pem'),
+  };
+
   const app: Express = express();
+
+  app.set('view engine', 'ejs');
 
   app.use(cors());
 
@@ -19,10 +29,12 @@ async function start(): Promise<void> {
 
   app.use("/", router);
 
+  const server = https.createServer(options, app);
+
   myDataSource
     .initialize()
     .then(() => {
-      app.listen(HTTP_PORT, () => {
+      server.listen(HTTP_PORT, () => {
         console.log(`Server: ${HTTP_HOST}`);
       });
     })
