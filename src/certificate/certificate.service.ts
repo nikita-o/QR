@@ -52,7 +52,11 @@ export async function acceptTransaction(orderId: string) {
   const qr: Buffer = await generateQR(url);
 
   try {
-    await sendQrToMail(certificate.email, "QR код вашего сертификата", qr);
+    const message = `
+    Вы приобрели сертификат в "ресторан" на "сумма", ваш сертификат действителен до "дата покупки +1 год".
+    Данный QR-код предназначен только для сотрудника ресторана, пожалуйста не сканируйте его самостоятельно. Если вы погасите сертификат до посещения, он будет считаться не действительным.
+    `;
+    await sendQrToMail(certificate.email, message, qr);
   } catch (error) {
     throw new Error("Несуществующий email");
   }
