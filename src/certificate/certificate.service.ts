@@ -51,9 +51,11 @@ export async function acceptTransaction(orderId: string) {
   const url = `${hostFront}/accept-certificate.html?id=${encryptId}`;
   const qr: Buffer = await generateQR(url);
 
+  const date: string = DateTime.fromJSDate(certificate.createDate).plus({year: 1}).setLocale('ru').toLocaleString(DateTime.DATE_SHORT);
+
   try {
     const message = `
-    Вы приобрели сертификат в ${certificate.restaurant} на ${certificate.price}, ваш сертификат действителен до ${DateTime.fromJSDate(certificate.createDate).plus({year: 1}).toISODate()}.
+    Вы приобрели сертификат в ${certificate.restaurant} на ${certificate.price}, ваш сертификат действителен до ${date}.
     Данный QR-код предназначен только для сотрудника ресторана, пожалуйста не сканируйте его самостоятельно. Если вы погасите сертификат до посещения, он будет считаться не действительным.
     `;
     await sendQrToMail(certificate.email, message, qr);
