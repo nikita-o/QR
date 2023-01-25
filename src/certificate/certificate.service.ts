@@ -6,7 +6,7 @@ import { sendQrToMail } from "../utils/mail.util";
 import { myDataSource } from "../app-data-source";
 import { checkStatusCertificate, registerCertificate } from "../utils/sberbank.util";
 import { BuyCertificateDto } from "./dto/buy-certificate.dto";
-//import nanoid = require('nanoid');
+import { DateTime } from "luxon";
 import { nanoid } from "nanoid";
 
 export async function buyCertificate(data: BuyCertificateDto) {
@@ -53,7 +53,7 @@ export async function acceptTransaction(orderId: string) {
 
   try {
     const message = `
-    Вы приобрели сертификат в ${certificate.restaurant} на ${certificate.price}, ваш сертификат действителен до "дата покупки +1 год".
+    Вы приобрели сертификат в ${certificate.restaurant} на ${certificate.price}, ваш сертификат действителен до ${DateTime.fromJSDate(certificate.createDate).plus({year: 1}).toISODate()}.
     Данный QR-код предназначен только для сотрудника ресторана, пожалуйста не сканируйте его самостоятельно. Если вы погасите сертификат до посещения, он будет считаться не действительным.
     `;
     await sendQrToMail(certificate.email, message, qr);
