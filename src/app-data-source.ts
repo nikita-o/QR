@@ -1,5 +1,6 @@
 import { DataSource } from "typeorm";
 import { Certificate } from "./entities/certificate.entity";
+import { Order } from "./entities/order.entity";
 
 export const myDataSource = new DataSource({
   type: "postgres",
@@ -8,7 +9,7 @@ export const myDataSource = new DataSource({
   username: "postgres",
   password: "postgres",
   database: "certificate",
-  entities: [Certificate],
+  entities: [Order, Certificate],
   logging: false,
   synchronize: true,
 });
