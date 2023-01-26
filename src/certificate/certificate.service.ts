@@ -8,62 +8,90 @@ import { checkStatusCertificate, registerCertificate } from "../utils/sberbank.u
 import { BuyCertificateDto } from "./dto/buy-certificate.dto";
 import { DateTime } from "luxon";
 import { nanoid } from "nanoid";
+import { EStatusOrder, Order } from "../entities/order.entity";
+
 
 export async function buyCertificate(data: BuyCertificateDto) {
   const id = nanoid();
 
-  const order = await registerCertificate(id, data.price * 100);
+  const orderSberbank = await registerCertificate(id, data.price * data.count * 100);
+
+  const order: Order = await myDataSource
+    .getRepository(Order)
+    .save({
+      id,
+      externalId: orderSberbank.orderId,
+      formUrl: orderSberbank.formUrl,
+      price: data.price * data.count,
+      email: data.email,
+    });
+
+  const certificates: Certificate[] = Array.from(Array(data.count), () => ({
+    restaurant: data.restaurant,
+    price: data.price,
+    order,
+  })) as Certificate[];
 
   await myDataSource
     .getRepository(Certificate)
-    .save({
-      id,
-      orderId: order.orderId,
-      formUrl: order.formUrl,
-      restaurant: data.restaurant,
-      price: data.price,
-      email: data.email,
-      status: EStatusCertificate.WaitPayment,
-    });
+    .save(certificates)
 
   return order.formUrl;
 }
 
-export async function acceptTransaction(orderId: string) {
-  const certificate: Certificate | null = await myDataSource
-    .getRepository(Certificate)
-    .findOneBy({ orderId });
+export async function acceptTransaction(externalId: string) {
+  const order: Order | null = await myDataSource
+    .getRepository(Order)
+    .findOne({ where: { externalId } });
 
-  if (!certificate) {
+  if (!order) {
     throw new Error('Нет');
   }
 
-  await checkStatusCertificate(certificate.id);
+  await checkStatusCertificate(order.id);
+
+  await myDataSource
+    .getRepository(Order)
+    .save({
+      id: order.id,
+      status: EStatusOrder.Payment,
+    });
+
+  const certificates: Certificate[] = await myDataSource
+    .getRepository(Certificate)
+    .findBy({order: {id: order.id}});
 
   await myDataSource
     .getRepository(Certificate)
-    .save({
-      id: certificate.id,
+    .save(certificates.map((certificate) => ({
+      ...certificate,
       status: EStatusCertificate.Free,
-    });
+    })));
 
-  const encryptId = encrypt(certificate.id);
-  const url = `${hostFront}/accept-certificate.html?id=${encryptId}`;
-  const qr: Buffer = await generateQR(url);
-
-  const date: string = DateTime.fromJSDate(certificate.createDate).plus({year: 1}).setLocale('ru').toLocaleString(DateTime.DATE_SHORT);
-
-  try {
-    const message = `
-    Вы приобрели сертификат в ${certificate.restaurant} на ${certificate.price}, ваш сертификат действителен до ${date}.
-    Данный QR-код предназначен только для сотрудника ресторана, пожалуйста не сканируйте его самостоятельно. Если вы погасите сертификат до посещения, он будет считаться не действительным.
-    `;
-    await sendQrToMail(certificate.email, message, qr);
-  } catch (error) {
-    throw new Error("Несуществующий email");
+  const qr: Buffer[] = [];
+  for await (const certificate of certificates) {
+    const encryptId = encrypt(certificate.id);
+    const url = `${hostFront}/accept-certificate.html?id=${encryptId}`;
+    qr.push(await generateQR(url));
   }
 
-  return certificate.email;
+  const date: string = DateTime
+    .fromJSDate(order.createdAt)
+    .plus({year: 1})
+    .setLocale('ru')
+    .toLocaleString(DateTime.DATE_SHORT);
+
+  const message = `
+      Вы приобрели сертификат в РЕСТОРАН на ЦЕНА, ваш сертификат действителен до ${date}.
+      Данный QR-код предназначен только для сотрудника ресторана, пожалуйста не сканируйте его самостоятельно. Если вы погасите сертификат до посещения, он будет считаться не действительным.
+    `;
+
+  await sendQrToMail(order.email, message, qr)
+    .catch((error) => {
+      throw new Error("Несуществующий email");
+    });
+
+  return order.email;
 }
 
 export async function checkCertificate(encryptId: string): Promise<any> {
@@ -73,19 +101,39 @@ export async function checkCertificate(encryptId: string): Promise<any> {
   } catch (error) {
     throw new Error("Данные не корректны");
   }
-  const certificate: Certificate | null = await myDataSource
+
+  let certificate: Certificate | null = await myDataSource
     .getRepository(Certificate)
     .findOneBy({ id });
+
   if (!certificate) {
     throw new Error("Данные не корректны");
   }
 
+  const order: Order | null = await myDataSource
+    .getRepository(Order)
+    .findOneBy({id: certificate.orderId})
+
+  if (!order) {
+    throw new Error();
+  }
+
+  const date: Date = DateTime
+    .fromJSDate(certificate.createdAt)
+    .plus({year: 1}).toJSDate();
+
+  if (date > new Date()) {
+    certificate = await myDataSource
+      .getRepository(Certificate)
+      .save({ id, status: EStatusCertificate.Expired });
+  }
+
   return {
-    email: certificate.email,
+    email: order.email,
     price: certificate.price,
     restaurant: certificate.restaurant,
     status: certificate.status,
-    createDate: certificate.createDate
+    createDate: certificate.createdAt
       .toISOString()
       .replace(/T/, " ")
       .replace(/\..+/, "")
@@ -100,11 +148,21 @@ export async function acceptCertificate(encryptId: string): Promise<Certificate>
   } catch (error) {
     throw new Error("Данные не корректны");
   }
-  const certificate: Certificate | null = await myDataSource
+  let certificate: Certificate | null = await myDataSource
     .getRepository(Certificate)
     .findOneBy({ id });
   if (!certificate) {
     throw new Error("Данные не корректны");
+  }
+
+  const date: Date = DateTime
+    .fromJSDate(certificate.createdAt)
+    .plus({year: 1}).toJSDate();
+
+  if (date > new Date()) {
+    return await myDataSource
+      .getRepository(Certificate)
+      .save({ id, status: EStatusCertificate.Expired });
   }
 
   if (certificate.status === EStatusCertificate.Close) {
@@ -120,7 +178,6 @@ export async function getCertificatesList(page: number): Promise<any> {
     skip: page * pageSize,
     take: pageSize,
     order: { restaurant: 'ASC' },
-    select: ['restaurant', 'status', 'price', 'email', 'createDate'],
   });
   return {
     certificates,

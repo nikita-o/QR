@@ -12,18 +12,16 @@ const transporter = nodemailer.createTransport({
 export async function sendQrToMail(
   recipient: string,
   message: string,
-  qr: Buffer,
+  qrs: Buffer[],
 ) {
   await transporter.sendMail({
     from: email,
     to: recipient,
     subject: "Certificate",
     html: message,
-    attachments: [
-      {
-        filename: "certificate.png",
-        content: qr,
-      },
-    ],
+    attachments: qrs.map((qr: Buffer, index: number) => ({
+      filename: `certificate (${index}).png`,
+      content: qr,
+    })),
   });
 }

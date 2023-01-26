@@ -1,4 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, PrimaryColumn } from "typeorm";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  PrimaryColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+} from "typeorm";
+import { Order } from "./order.entity";
 
 export enum EStatusCertificate {
   Free,
@@ -9,17 +18,13 @@ export enum EStatusCertificate {
 
 @Entity()
 export class Certificate {
-  @PrimaryColumn()
+  @PrimaryColumn('uuid')
   id!: string;
 
+  @ManyToOne(() => Order)
+  order!: Order;
   @Column()
   orderId!: string;
-
-  @Column()
-  formUrl!: string;
-
-  @Column({ nullable: true })
-  email!: string;
 
   @Column()
   price!: number;
@@ -34,6 +39,9 @@ export class Certificate {
   })
   status!: EStatusCertificate;
 
-  @Column({ default: () => "CURRENT_TIMESTAMP" })
-  createDate!: Date;
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
 }
