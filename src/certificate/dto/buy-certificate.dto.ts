@@ -1,6 +1,6 @@
 export class BuyCertificateDto {
   restaurant!: string;
   price!: number;
-  count!: number;
+  count?: number;
   email!: string;
 }

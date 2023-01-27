@@ -14,6 +14,10 @@ import { EStatusOrder, Order } from "../entities/order.entity";
 export async function buyCertificate(data: BuyCertificateDto) {
   const id = nanoid();
 
+  if (!data.count) {
+    data.count = 1;
+  }
+
   const orderSberbank = await registerCertificate(id, data.price * data.count * 100);
 
   const order: Order = await myDataSource
