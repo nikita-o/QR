@@ -67,15 +67,12 @@ router
   // views:
   .get("/table-certificates", async (req: Request, res: Response) => {
     const page: number = Number(req.query.page ?? 0);
-    const {certificates, totalCount, totalPages } = await getCertificatesList(page);
-    console.log(certificates);
-    console.log(totalCount);
-    console.log(totalPages);
+    const {orders, countCertificate, totalPages } = await getCertificatesList(page);
     res.render('table-certificates', {
       title: 'Hello',
       currentPage: page,
-      certificates,
-      totalCount,
+      orders,
+      countCertificate,
       totalPages,
     });
   });

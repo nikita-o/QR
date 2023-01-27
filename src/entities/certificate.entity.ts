@@ -10,15 +10,15 @@ import {
 import { Order } from "./order.entity";
 
 export enum EStatusCertificate {
-  Free,
-  Close,
+  Payment,
   WaitPayment,
+  Close,
   Expired,
 }
 
 @Entity()
 export class Certificate {
-  @PrimaryColumn('uuid')
+  @PrimaryGeneratedColumn('uuid')
   id!: string;
 
   @ManyToOne(() => Order)

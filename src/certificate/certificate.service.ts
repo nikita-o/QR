@@ -65,7 +65,7 @@ export async function acceptTransaction(externalId: string) {
     .getRepository(Certificate)
     .save(certificates.map((certificate) => ({
       ...certificate,
-      status: EStatusCertificate.Free,
+      status: EStatusCertificate.Payment,
     })));
 
   const qr: Buffer[] = [];
@@ -174,14 +174,21 @@ export async function acceptCertificate(encryptId: string): Promise<Certificate>
 
 export async function getCertificatesList(page: number): Promise<any> {
   const pageSize = 25;
-  const [certificates, totalCount]: [Certificate[], number] = await myDataSource.getRepository(Certificate).findAndCount({
-    skip: page * pageSize,
-    take: pageSize,
-    order: { restaurant: 'ASC' },
-  });
+  const [orders, totalCount]: [Order[], number] = await myDataSource
+    .getRepository(Order)
+    .findAndCount({
+      skip: page * pageSize,
+      take: pageSize,
+      order: { createdAt: 'ASC' },
+      relations: { certificates: true },
+    });
+
+  const countCertificate: number = await myDataSource
+    .getRepository(Certificate)
+    .count();
   return {
-    certificates,
-    totalCount,
+    orders,
+    countCertificate,
     totalPages: Math.ceil(totalCount / pageSize),
   }
 }

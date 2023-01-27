@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import { Certificate } from "./certificate.entity";
 
 export enum EStatusOrder {
   Payment,
@@ -9,6 +10,9 @@ export enum EStatusOrder {
 export class Order {
   @PrimaryColumn()
   id!: string;
+
+  @OneToMany(() => Certificate, (certificate) => certificate.order)
+  certificates!: Certificate[];
 
   @Column({unique: true})
   externalId!: string;
