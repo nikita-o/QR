@@ -6,6 +6,7 @@ import { myDataSource } from "./app-data-source";
 import { HTTP_HOST, HTTP_PORT } from "./config/index";
 import cors from "cors";
 import * as https from "https";
+import QRCode from "qrcode";
 
 async function start(): Promise<void> {
   config();

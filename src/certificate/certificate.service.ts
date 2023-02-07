@@ -91,13 +91,13 @@ export async function acceptTransaction(externalId: string) {
 
   for await (const certificate of certificates) {
     const encryptId = encrypt(certificate.id);
-    const url = `${hostFront}/accept-certificate.html?id=${encryptId}`;
-    await generateQR(url);
+    // const url = `${hostFront}/accept-certificate.html?id=${encryptId}`;
+    await generateQR(encryptId);
     const html = await ejs.renderFile(certificate.restaurant === 'ЕДИНЫЙ' ? mailHTMLUnified : mailHTML, {
       date,
       price: certificate.price,
       restaurant: certificate.restaurant,
-      urlQR: `${hostFront}/qr/${encryptId}`,
+      urlQR: `${hostFront}/qr/${encryptId}.png`,
     });
     await sendQrToMail(order.email, html)
       .catch((error) => {
