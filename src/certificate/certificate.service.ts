@@ -12,8 +12,8 @@ import { EStatusOrder, Order } from "../entities/order.entity";
 import * as ejs from "ejs"
 import fs from "fs";
 
-const mailHTML = 'mail-html/mail.ejs';
-const mailHTMLUnified = 'mail-html/mail2.ejs';
+const mailHTMLUnified = 'mail-html/mail.ejs';
+const mailHTML = 'mail-html/mail2.ejs';
 
 export async function buyCertificate(data: BuyCertificateDto) {
   const id = nanoid();
@@ -93,7 +93,7 @@ export async function acceptTransaction(externalId: string) {
     const encryptId = encrypt(certificate.id);
     // const url = `${hostFront}/accept-certificate.html?id=${encryptId}`;
     await generateQR(encryptId);
-    const html = await ejs.renderFile(certificate.restaurant === 'ЕДИНЫЙ' ? mailHTMLUnified : mailHTML, {
+    const html = await ejs.renderFile(certificate.restaurant === 'Единый сертификат' ? mailHTMLUnified : mailHTML, {
       date,
       price: certificate.price,
       restaurant: certificate.restaurant,
