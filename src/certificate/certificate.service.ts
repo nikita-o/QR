@@ -90,8 +90,6 @@ export async function acceptTransaction(externalId: string) {
     .setLocale('ru')
     .toLocaleString(DateTime.DATE_SHORT);
 
-  let urlImg = '';
-
   for await (const certificate of certificates) {
     const encryptId = encrypt(certificate.id);
     await generateQR(encryptId);
