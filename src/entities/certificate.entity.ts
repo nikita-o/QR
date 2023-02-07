@@ -16,6 +16,15 @@ export enum EStatusCertificate {
   Expired,
 }
 
+export enum ERestaurant {
+  edin, // ЕДИНЫЙ СЕРТИФИКАТ
+  fame, // FAME PASTA E VINO
+  hinkal, // АКАДЕМИЯ ХИНКАЛИ
+  kavkaz, // АКАДЕМИЯ КАВКАЗСКОЙ КУХНИ
+  koi, // IZAKAYA-KOI
+  urta, // ЮРТА ЧИНГИСХАНА
+}
+
 @Entity()
 export class Certificate {
   @PrimaryGeneratedColumn('uuid')
@@ -29,8 +38,12 @@ export class Certificate {
   @Column()
   price!: number;
 
-  @Column()
-  restaurant!: string;
+  @Column({
+    type: 'enum',
+    enum: ERestaurant,
+    default: ERestaurant.edin,
+  })
+  restaurant!: ERestaurant;
 
   @Column({
     type: 'enum',

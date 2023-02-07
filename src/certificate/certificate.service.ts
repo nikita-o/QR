@@ -1,5 +1,5 @@
-import { Certificate, EStatusCertificate } from "../entities/certificate.entity";
-import { hostFront, HTTP_HOST } from "../config/index";
+import { Certificate, ERestaurant, EStatusCertificate } from "../entities/certificate.entity";
+import { HTTP_HOST } from "../config/index";
 import { decrypt, encrypt } from "../utils/crypt.util";
 import { generateQR } from "../utils/qr.util";
 import { sendQrToMail } from "../utils/mail.util";
@@ -9,20 +9,19 @@ import { BuyCertificateDto } from "./dto/buy-certificate.dto";
 import { DateTime } from "luxon";
 import { nanoid } from "nanoid";
 import { EStatusOrder, Order } from "../entities/order.entity";
-import * as ejs from "ejs"
-import fs from "fs";
+import * as ejs from "ejs";
 
 const mailHTMLUnified = 'mail-html/mail.ejs';
 const mailHTML = 'mail-html/mail2.ejs';
 
-const ERestaurant = {
-  'Fame pasta e vino': 'fame',
-  'Izakaya-koi': 'koi',
-  'Академия кавказской кухни': 'kavkaz',
-  'Академия хинкали': 'hinkal',
-  'Единый сертификат': 'edin',
-  'Юрта Чингисхана': 'urta',
-}
+const restaurants = [
+  'ЕДИНЫЙ СЕРТИФИКАТ',
+  'FAME PASTA E VINO',
+  'АКАДЕМИЯ ХИНКАЛИ',
+  'АКАДЕМИЯ КАВКАЗСКОЙ КУХНИ',
+  'IZAKAYA-KOI',
+  'ЮРТА ЧИНГИСХАНА',
+]
 
 export async function buyCertificate(data: BuyCertificateDto) {
   const id = nanoid();
@@ -96,11 +95,12 @@ export async function acceptTransaction(externalId: string) {
   for await (const certificate of certificates) {
     const encryptId = encrypt(certificate.id);
     await generateQR(encryptId);
-    const html = await ejs.renderFile(certificate.restaurant === 'Единый сертификат' ? mailHTMLUnified : mailHTML, {
+
+    const html = await ejs.renderFile(certificate.restaurant === ERestaurant.edin ? mailHTMLUnified : mailHTML, {
       date,
       price: certificate.price,
-      restaurant: certificate.restaurant,
-      urlImg: ERestaurant[certificate.restaurant],
+      restaurant: restaurants[certificate.restaurant],
+      urlImg: `restaurant-${certificate.restaurant}`,
       urlQR: `${HTTP_HOST}/qr/${encryptId}.png`,
     });
     await sendQrToMail(order.email, html)
