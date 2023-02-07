@@ -140,10 +140,11 @@ export async function checkCertificate(encryptId: string): Promise<any> {
     .fromJSDate(certificate.createdAt)
     .plus({year: 1}).toJSDate();
 
-  if (date > new Date()) {
-    certificate = await myDataSource
+  if (date < new Date()) {
+    await myDataSource
       .getRepository(Certificate)
       .save({ id, status: EStatusCertificate.Expired });
+    certificate.status = EStatusCertificate.Expired;
   }
 
   return {
