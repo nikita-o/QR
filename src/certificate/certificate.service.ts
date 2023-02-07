@@ -76,12 +76,12 @@ export async function acceptTransaction(externalId: string) {
       status: EStatusCertificate.Payment,
     })));
 
-  const qr: Buffer[] = [];
-  for await (const certificate of certificates) {
-    const encryptId = encrypt(certificate.id);
-    const url = `${hostFront}/accept-certificate.html?id=${encryptId}`;
-    qr.push(await generateQR(url));
-  }
+  // const qr: Buffer[] = [];
+  // for await (const certificate of certificates) {
+  //   const encryptId = encrypt(certificate.id);
+  //   const url = `${hostFront}/accept-certificate.html?id=${encryptId}`;
+  //   qr.push(await generateQR(url));
+  // }
 
   const date: string = DateTime
     .fromJSDate(order.createdAt)
