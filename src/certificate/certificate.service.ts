@@ -1,5 +1,5 @@
 import { Certificate, EStatusCertificate } from "../entities/certificate.entity";
-import { hostFront } from "../config/index";
+import { hostFront, HTTP_HOST } from "../config/index";
 import { decrypt, encrypt } from "../utils/crypt.util";
 import { generateQR } from "../utils/qr.util";
 import { sendQrToMail } from "../utils/mail.util";
@@ -97,7 +97,7 @@ export async function acceptTransaction(externalId: string) {
       date,
       price: certificate.price,
       restaurant: certificate.restaurant,
-      urlQR: `${hostFront}/qr/${encryptId}.png`,
+      urlQR: `${HTTP_HOST}/qr/${encryptId}.png`,
     });
     await sendQrToMail(order.email, html)
       .catch((error) => {
