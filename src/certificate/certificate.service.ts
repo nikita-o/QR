@@ -15,6 +15,15 @@ import fs from "fs";
 const mailHTMLUnified = 'mail-html/mail.ejs';
 const mailHTML = 'mail-html/mail2.ejs';
 
+const ERestaurant = {
+  'Fame pasta e vino': 'fame',
+  'Izakaya-koi': 'koi',
+  'Академия кавказской кухни': 'kavkaz',
+  'Академия хинкали': 'hinkal',
+  'Единый сертификат': 'edin',
+  'Юрта Чингисхана': 'urta',
+}
+
 export async function buyCertificate(data: BuyCertificateDto) {
   const id = nanoid();
 
@@ -76,27 +85,22 @@ export async function acceptTransaction(externalId: string) {
       status: EStatusCertificate.Payment,
     })));
 
-  // const qr: Buffer[] = [];
-  // for await (const certificate of certificates) {
-  //   const encryptId = encrypt(certificate.id);
-  //   const url = `${hostFront}/accept-certificate.html?id=${encryptId}`;
-  //   qr.push(await generateQR(url));
-  // }
-
   const date: string = DateTime
     .fromJSDate(order.createdAt)
     .plus({year: 1})
     .setLocale('ru')
     .toLocaleString(DateTime.DATE_SHORT);
 
+  let urlImg = '';
+
   for await (const certificate of certificates) {
     const encryptId = encrypt(certificate.id);
-    // const url = `${hostFront}/accept-certificate.html?id=${encryptId}`;
     await generateQR(encryptId);
     const html = await ejs.renderFile(certificate.restaurant === 'Единый сертификат' ? mailHTMLUnified : mailHTML, {
       date,
       price: certificate.price,
       restaurant: certificate.restaurant,
+      urlImg: ERestaurant[certificate.restaurant],
       urlQR: `${HTTP_HOST}/qr/${encryptId}.png`,
     });
     await sendQrToMail(order.email, html)
