@@ -9,7 +9,11 @@ import { BuyCertificateDto } from "./dto/buy-certificate.dto";
 import { DateTime } from "luxon";
 import { nanoid } from "nanoid";
 import { EStatusOrder, Order } from "../entities/order.entity";
+import * as ejs from "ejs"
+import fs from "fs";
 
+const mailHTML = fs.readFileSync('mail-html/mail.ejs', 'utf8');
+const mailHTMLUnified = fs.readFileSync('mail-html/mail2.ejs', 'utf8');
 
 export async function buyCertificate(data: BuyCertificateDto) {
   const id = nanoid();
@@ -85,15 +89,20 @@ export async function acceptTransaction(externalId: string) {
     .setLocale('ru')
     .toLocaleString(DateTime.DATE_SHORT);
 
-  const message = `
-      Вы приобрели сертификат в РЕСТОРАН на ЦЕНА, ваш сертификат действителен до ${date}.
-      Данный QR-код предназначен только для сотрудника ресторана, пожалуйста не сканируйте его самостоятельно. Если вы погасите сертификат до посещения, он будет считаться не действительным.
-    `;
-
-  await sendQrToMail(order.email, message, qr)
-    .catch((error) => {
-      throw new Error("Несуществующий email");
+  for await (const certificate of certificates) {
+    const encryptId = encrypt(certificate.id);
+    const url = `${hostFront}/accept-certificate.html?id=${encryptId}`;
+    const html = ejs.render(certificate.restaurant === 'ЕДИНЫЙ' ? mailHTMLUnified : mailHTML, {
+      date,
+      price: certificate.price,
+      restaurant: certificate.restaurant,
+      qr: await generateQR(url),
     });
+    await sendQrToMail(order.email, html)
+      .catch((error) => {
+        throw new Error("Несуществующий email");
+      });
+  }
 
   return order.email;
 }

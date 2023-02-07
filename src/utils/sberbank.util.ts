@@ -3,9 +3,9 @@ import {HTTP_HOST, sberLogin, sberPass, urlSberPayment} from "../config";
 import * as https from "https";
 
 export function registerCertificate(orderNumber: string, amount: number) {
-    // const httpsAgent = new https.Agent({
-    //     rejectUnauthorized: false,
-    // });
+    const httpsAgent = new https.Agent({
+        rejectUnauthorized: false,
+    });
 
     return axios.post(`${urlSberPayment}/register.do`, {
         userName: sberLogin,
@@ -16,7 +16,7 @@ export function registerCertificate(orderNumber: string, amount: number) {
         orderNumber,
     }, {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        //httpsAgent,
+        httpsAgent,
     }).then(data => data.data)
       .catch(err => {
           console.log(err);

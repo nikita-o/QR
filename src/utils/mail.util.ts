@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { email, emailPass } from "../config/index";
+import { email, emailPass } from "../config/index"
 
 const transporter = nodemailer.createTransport({
   service: "Yandex",
@@ -11,17 +11,17 @@ const transporter = nodemailer.createTransport({
 
 export async function sendQrToMail(
   recipient: string,
-  message: string,
-  qrs: Buffer[],
+  html: string,
+  // qrs: Buffer[],
 ) {
   await transporter.sendMail({
     from: email,
     to: recipient,
     subject: "Certificate",
-    html: message,
-    attachments: qrs.map((qr: Buffer, index: number) => ({
-      filename: `certificate (${index}).png`,
-      content: qr,
-    })),
+    html
+    // attachments: qrs.map((qr: Buffer, index: number) => ({
+    //   filename: `certificate (${index}).png`,
+    //   content: qr,
+    // })),
   });
 }
