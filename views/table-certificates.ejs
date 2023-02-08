@@ -47,7 +47,28 @@
             <tbody>
             <% orders.forEach(function(order, index){ %>
             <tr>
-                <td><%= order.certificates[0].restaurant %></td>
+                <td>
+                    <% switch (order.certificates[0].restaurant) {
+                    case 0: %>
+                    ЕДИНЫЙ СЕРТИФИКАТ
+                    <% break;
+                    case 1: %>
+                    FAME PASTA E VINO
+                    <% break;
+                    case 2: %>
+                    АКАДЕМИЯ ХИНКАЛИ
+                    <% break;
+                    case 3: %>
+                    АКАДЕМИЯ КАВКАЗСКОЙ КУХНИ
+                    <% break;
+                    case 4: %>
+                    IZAKAYA-KOI
+                    <% break;
+                    case 5: %>
+                    ЮРТА ЧИНГИСХАНА
+                    <% break;
+                        default: break; }%>
+                </td>
                 <td><%= order.price %></td>
                 <td><%= order.createdAt.toLocaleDateString("ru-RU") %></td>
                 <td><%= order.email %></td>
