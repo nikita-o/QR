@@ -26,6 +26,10 @@ const restaurants = [
 export async function buyCertificate(data: BuyCertificateDto) {
   const id = nanoid();
 
+  data.count = Number(data.count);
+  data.price = Number(data.price);
+  data.price = Number(data.restaurant);
+
   if (!data.count) {
     data.count = 1;
   }
