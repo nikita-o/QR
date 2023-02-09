@@ -11,5 +11,5 @@ export const myDataSource = new DataSource({
   database: "certificate",
   entities: [Order, Certificate],
   logging: false,
-  synchronize: true,
+  synchronize: false,
 });

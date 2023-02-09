@@ -180,7 +180,7 @@ export async function acceptCertificate(encryptId: string): Promise<Certificate>
     .fromJSDate(certificate.createdAt)
     .plus({year: 1}).toJSDate();
 
-  if (date > new Date()) {
+  if (date < new Date()) {
     return await myDataSource
       .getRepository(Certificate)
       .save({ id, status: EStatusCertificate.Expired });
