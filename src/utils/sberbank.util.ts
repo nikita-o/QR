@@ -1,11 +1,16 @@
 import axios from "axios";
 import {HTTP_HOST, sberLogin, sberPass, urlSberPayment} from "../config";
 import * as https from "https";
+import fs from "fs";
+
+const httpsAgent = new https.Agent({
+    ca: [
+        fs.readFileSync('Cert_CA.pem'),
+    ]
+});
 
 export function registerCertificate(orderNumber: string, amount: number) {
-    const httpsAgent = new https.Agent({
-        rejectUnauthorized: false,
-    });
+
 
     return axios.post(`${urlSberPayment}/register.do`, {
         userName: sberLogin,
@@ -24,10 +29,6 @@ export function registerCertificate(orderNumber: string, amount: number) {
 }
 
 export async function checkStatusCertificate(orderNumber: string): Promise<void> {
-    const httpsAgent = new https.Agent({
-        rejectUnauthorized: false,
-    });
-
     const orderStatus: number = await axios.post(`${urlSberPayment}/getOrderStatusExtended.do`, {
         userName: sberLogin,
         password: sberPass,
