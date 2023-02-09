@@ -7,7 +7,9 @@ export const HTTP_HOST = env.HTTP_HOST || "localhost";
 export const email = env.EMAIL;
 export const emailPass = env.EMAIL_PASS;
 
-export const urlSberPayment = env.URL_SBER_PAYMENT || "https://3dsec.sberbank.ru/payment/rest";
+export const TEST = Boolean(Number(env.TEST));
+
+export const urlSberPayment = TEST ? 'https://3dsec.sberbank.ru/payment/rest' : 'https://securepayments.sberbank.ru/payment/rest';
 export const sberLogin = env.SBER_LOGIN;
 export const sberPass = env.SBER_PASS;
 export const hostFront = env.HTTP_HOST_FRONT || 'http://localhost:8081';
