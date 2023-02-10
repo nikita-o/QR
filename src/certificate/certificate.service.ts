@@ -2,7 +2,7 @@ import { Certificate, ERestaurant, EStatusCertificate } from "../entities/certif
 import { HTTP_HOST } from "../config/index";
 import { decrypt, encrypt } from "../utils/crypt.util";
 import { generateQR } from "../utils/qr.util";
-import { sendQrToMail } from "../utils/mail.util";
+import { sendQrToMail, sendURLPaymentToMail } from "../utils/mail.util";
 import { myDataSource } from "../app-data-source";
 import { checkStatusCertificate, registerCertificate } from "../utils/sberbank.util";
 import { BuyCertificateDto } from "./dto/buy-certificate.dto";
@@ -56,7 +56,7 @@ export async function buyCertificate(data: BuyCertificateDto) {
     .getRepository(Certificate)
     .save(certificates)
 
-  return order.formUrl;
+  await sendURLPaymentToMail(data.email, order.formUrl);
 }
 
 export async function acceptTransaction(externalId: string) {

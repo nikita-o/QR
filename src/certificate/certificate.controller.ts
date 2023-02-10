@@ -20,8 +20,8 @@ router
 
   .post("/buy-certificate", async (req: Request, res: Response) => {
     try {
-      const url = await buyCertificate(req.body);
-      res.redirect(url); // может стоит строчку url кидать, а не редиректить
+      await buyCertificate(req.body);
+      res.send();
     } catch (error: any) {
       res
         .status(error.status || 500)

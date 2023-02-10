@@ -9,6 +9,20 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+export async function sendURLPaymentToMail(recipient: string, url: string) {
+  console.log(recipient);
+  await transporter.sendMail({
+    from: email,
+    to: recipient,
+    subject: "Certificate",
+    text: `
+    Ссылка на оплату сертификатов в ресторан: 
+    ${url}
+    * если вы не не собирались купить сертификат в ресторан, проигнорируйте данное письмо.
+    `,
+  });
+}
+
 export async function sendQrToMail(
   recipient: string,
   html: string,
@@ -18,7 +32,7 @@ export async function sendQrToMail(
     from: email,
     to: recipient,
     subject: "Certificate",
-    html
+    html,
     // attachments: qrs.map((qr: Buffer, index: number) => ({
     //   filename: `certificate (${index}).png`,
     //   content: qr,
