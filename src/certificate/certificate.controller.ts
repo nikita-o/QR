@@ -21,7 +21,7 @@ router
   .post("/buy-certificate", async (req: Request, res: Response) => {
     try {
       await buyCertificate(req.body);
-      res.send();
+      res.redirect(`${hostFront}/certificates/thanks`);
     } catch (error: any) {
       res
         .status(error.status || 500)
