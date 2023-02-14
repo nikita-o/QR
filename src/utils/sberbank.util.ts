@@ -10,13 +10,14 @@ const httpsAgent = new https.Agent({
 });
 
 export function registerCertificate(orderNumber: string, amount: number) {
-
-
+    console.log(sberLogin);
+    console.log(sberPass);
+    console.log(urlSberPayment);
+    console.log(HTTP_HOST);
     return axios.post(`${urlSberPayment}/register.do`, {
         userName: sberLogin,
         password: sberPass,
         returnUrl: `${HTTP_HOST}/accept-buy-certificate`,
-        // failUrl: `${HTTP_HOST}/fail-payment`,
         amount,
         orderNumber,
     }, {
@@ -43,6 +44,7 @@ export async function checkStatusCertificate(orderNumber: string): Promise<void>
             throw new Error("заказ зарегистрирован, но не оплачен");
         case 1:
             throw new Error("предавторизованная сумма удержана (для двухстадийных платежей)");
+        // 2 - хорошо
         case 3:
             throw new Error("авторизация отменена");
         case 4:
@@ -50,6 +52,8 @@ export async function checkStatusCertificate(orderNumber: string): Promise<void>
         case 5:
             throw new Error("инициирована авторизация через сервер контроля доступа банка-эмитента");
         case 6:
+            throw new Error("авторизация отклонена");
+        default:
             throw new Error("авторизация отклонена");
     }
 }

@@ -3,13 +3,15 @@ import type { Express } from "express";
 import { config } from "dotenv";
 import { router } from "./certificate/certificate.controller";
 import { myDataSource } from "./app-data-source";
-import { HTTP_HOST, HTTP_PORT } from "./config/index";
+import { HTTP_HOST, HTTP_PORT, urlSberPayment } from "./config/index";
 import cors from "cors";
 import * as https from "https";
 import QRCode from "qrcode";
 
 async function start(): Promise<void> {
   config();
+
+  console.log(urlSberPayment);
 
   const app: Express = express();
 

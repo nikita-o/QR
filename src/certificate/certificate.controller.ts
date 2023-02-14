@@ -6,6 +6,7 @@ import {
   checkCertificate, acceptTransaction, buyCertificate, getCertificatesList,
 } from "./certificate.service";
 import { Certificate } from "../entities/certificate.entity";
+import { registerCertificate } from "../utils/sberbank.util";
 
 export const router: Router = Router();
 
@@ -18,6 +19,14 @@ router
     res.send({email: 'asd@asd', price: 5000, createDate: new Date().toLocaleDateString()});
   })
 
+  .get('/', async (req: Request, res: Response) => {
+    const k = await registerCertificate("999", 1000);
+    console.log(k);
+    res.send(k);
+
+  })
+
+  // Сюда переходит фронт, при заказе сертификата
   .post("/buy-certificate", async (req: Request, res: Response) => {
     try {
       await buyCertificate(req.body);
@@ -29,6 +38,7 @@ router
     }
   })
 
+  // Сюда переходит сбер после оплаты (или если с заказом оплаты что то не так)
   .get("/accept-buy-certificate", async (req: Request, res: Response) => {
     try {
       const email: string = await acceptTransaction(req.query.orderId as string);
@@ -41,6 +51,7 @@ router
     }
   })
 
+  // Сюда переходят через qr код
   .get("/check-certificate", async (req: Request, res: Response) => {
     try {
       const certificate: Certificate = await checkCertificate(String(req.query.encryptId));
@@ -52,6 +63,7 @@ router
     }
   })
 
+  // Сюда переходят когда закрывают сертификат
   .get("/close-certificate", async (req: Request, res: Response) => {
     try {
       const certificate: Certificate = await acceptCertificate(String(req.query.encryptId));
@@ -64,7 +76,7 @@ router
     }
   })
 
-  // views:
+  // Сюда переходят для просмотра всех сертификатов
   .get("/table-certificates", async (req: Request, res: Response) => {
     const page: number = Number(req.query.page ?? 0);
     const {orders, countCertificate, totalPages } = await getCertificatesList(page);

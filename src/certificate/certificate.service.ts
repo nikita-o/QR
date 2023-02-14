@@ -60,6 +60,7 @@ export async function buyCertificate(data: BuyCertificateDto) {
 }
 
 export async function acceptTransaction(externalId: string) {
+  console.log(123);
   const order: Order | null = await myDataSource
     .getRepository(Order)
     .findOne({ where: { externalId } });
