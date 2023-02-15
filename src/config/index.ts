@@ -9,6 +9,9 @@ export const hostFront = env.HTTP_HOST_FRONT || 'http://localhost:8081';
 export const email = env.EMAIL;
 export const emailPass = env.EMAIL_PASS;
 
+export const DB_username = env.POSTGRES_USER || 'postgres';
+export const DB_pass = env.POSTGRES_PASSWORD || 'postgres';
+
 export const TEST = Boolean(Number(env.TEST));
 export const urlSberPayment = TEST ? 'https://3dsec.sberbank.ru/payment/rest' : 'https://securepayments.sberbank.ru/payment/rest';
 export const sberToken = env.SBER_TOKEN;
