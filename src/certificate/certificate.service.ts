@@ -3,7 +3,7 @@ import { HTTP_HOST } from "../config/index";
 import { decrypt, encrypt } from "../utils/crypt.util";
 import { generateQR } from "../utils/qr.util";
 import { sendQrToMail, sendURLPaymentToMail } from "../utils/mail.util";
-import { myDataSource } from "../app-data-source";
+import { connect } from "../app-data-source";
 import { checkStatusCertificate, registerCertificate } from "../utils/sberbank.util";
 import { BuyCertificateDto } from "./dto/buy-certificate.dto";
 import { DateTime } from "luxon";
@@ -44,7 +44,7 @@ export async function buyCertificate(data: BuyCertificateDto) {
 
   const orderSberbank = await registerCertificate(id, data.price * data.count * 100);
 
-  const order: Order = await myDataSource
+  const order: Order = await connect()
     .getRepository(Order)
     .save({
       id,
@@ -60,7 +60,7 @@ export async function buyCertificate(data: BuyCertificateDto) {
     order,
   })) as Certificate[];
 
-  await myDataSource
+  await connect()
     .getRepository(Certificate)
     .save(certificates)
 
@@ -68,7 +68,7 @@ export async function buyCertificate(data: BuyCertificateDto) {
 }
 
 export async function acceptTransaction(externalId: string) {
-  const order: Order | null = await myDataSource
+  const order: Order | null = await connect()
     .getRepository(Order)
     .findOne({ where: { externalId } });
 
@@ -78,18 +78,18 @@ export async function acceptTransaction(externalId: string) {
 
   await checkStatusCertificate(order.externalId);
 
-  await myDataSource
+  await connect()
     .getRepository(Order)
     .save({
       id: order.id,
       status: EStatusOrder.Payment,
     });
 
-  const certificates: Certificate[] = await myDataSource
+  const certificates: Certificate[] = await connect()
     .getRepository(Certificate)
     .findBy({order: {id: order.id}});
 
-  await myDataSource
+  await connect()
     .getRepository(Certificate)
     .save(certificates.map((certificate) => ({
       ...certificate,
@@ -130,7 +130,7 @@ export async function checkCertificate(encryptId: string): Promise<any> {
     throw new Error("Данные не корректны");
   }
 
-  let certificate: Certificate | null = await myDataSource
+  let certificate: Certificate | null = await connect()
     .getRepository(Certificate)
     .findOneBy({ id });
 
@@ -138,7 +138,7 @@ export async function checkCertificate(encryptId: string): Promise<any> {
     throw new Error("Данные не корректны");
   }
 
-  const order: Order | null = await myDataSource
+  const order: Order | null = await connect()
     .getRepository(Order)
     .findOneBy({id: certificate.orderId})
 
@@ -151,7 +151,7 @@ export async function checkCertificate(encryptId: string): Promise<any> {
     .plus({year: 1}).toJSDate();
 
   if (date < new Date()) {
-    await myDataSource
+    await connect()
       .getRepository(Certificate)
       .save({ id, status: EStatusCertificate.Expired });
     certificate.status = EStatusCertificate.Expired;
@@ -177,7 +177,7 @@ export async function acceptCertificate(encryptId: string): Promise<Certificate>
   } catch (error) {
     throw new Error("Данные не корректны");
   }
-  let certificate: Certificate | null = await myDataSource
+  let certificate: Certificate | null = await connect()
     .getRepository(Certificate)
     .findOneBy({ id });
   if (!certificate) {
@@ -189,7 +189,7 @@ export async function acceptCertificate(encryptId: string): Promise<Certificate>
     .plus({year: 1}).toJSDate();
 
   if (date < new Date()) {
-    return await myDataSource
+    return await connect()
       .getRepository(Certificate)
       .save({ id, status: EStatusCertificate.Expired });
   }
@@ -198,12 +198,12 @@ export async function acceptCertificate(encryptId: string): Promise<Certificate>
     throw new Error("Сертификат уже погашен");
   }
   certificate.status = EStatusCertificate.Close;
-  return await myDataSource.getRepository(Certificate).save(certificate);
+  return await connect().getRepository(Certificate).save(certificate);
 }
 
 export async function getCertificatesList(page: number): Promise<any> {
   const pageSize = 25;
-  const [orders, totalCount]: [Order[], number] = await myDataSource
+  const [orders, totalCount]: [Order[], number] = await connect()
     .getRepository(Order)
     .findAndCount({
       skip: page * pageSize,
@@ -212,7 +212,7 @@ export async function getCertificatesList(page: number): Promise<any> {
       relations: { certificates: true },
     });
 
-  const countCertificate: number = await myDataSource
+  const countCertificate: number = await connect()
     .getRepository(Certificate)
     .count();
   return {

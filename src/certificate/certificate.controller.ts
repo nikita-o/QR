@@ -19,13 +19,6 @@ router
     res.send({email: 'asd@asd', price: 5000, createDate: new Date().toLocaleDateString()});
   })
 
-  .get('/', async (req: Request, res: Response) => {
-    const k = await registerCertificate("999", 1000);
-    console.log(k);
-    res.send(k);
-
-  })
-
   // Сюда переходит фронт, при заказе сертификата
   .post("/buy-certificate", async (req: Request, res: Response) => {
     try {
