@@ -27,12 +27,12 @@ export async function registerCertificate(orderNumber: string, amount: number) {
     return data;
 }
 
-export async function checkStatusCertificate(orderNumber: string): Promise<void> {
+export async function checkStatusCertificate(orderId: string): Promise<void> {
     const { data } = await axios.post(`${urlSberPayment}/getOrderStatusExtended.do`, {
         // userName: sberLogin,
         // password: sberPass,
         token: sberToken,
-        orderNumber,
+        orderId,
     }, {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         httpsAgent,

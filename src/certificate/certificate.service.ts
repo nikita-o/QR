@@ -34,6 +34,14 @@ export async function buyCertificate(data: BuyCertificateDto) {
     data.count = 1;
   }
 
+  if (data.count > 100) {
+    throw new Error('> 100 сертификатов!');
+  }
+
+  if (![1500, 3000, 5000].includes(data.price)) {
+    throw new Error('Некорректная цена!');
+  }
+
   const orderSberbank = await registerCertificate(id, data.price * data.count * 100);
 
   const order: Order = await myDataSource
@@ -60,7 +68,6 @@ export async function buyCertificate(data: BuyCertificateDto) {
 }
 
 export async function acceptTransaction(externalId: string) {
-  console.log(123);
   const order: Order | null = await myDataSource
     .getRepository(Order)
     .findOne({ where: { externalId } });
@@ -69,7 +76,7 @@ export async function acceptTransaction(externalId: string) {
     throw new Error('Нет');
   }
 
-  await checkStatusCertificate(order.id);
+  await checkStatusCertificate(order.externalId);
 
   await myDataSource
     .getRepository(Order)
