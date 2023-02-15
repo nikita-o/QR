@@ -17,6 +17,7 @@ export async function registerCertificate(orderNumber: string, amount: number) {
         returnUrl: `${HTTP_HOST}/accept-buy-certificate`,
         amount,
         orderNumber,
+        sessionTimeoutSecs: 86400,
     }, {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         httpsAgent,
@@ -41,6 +42,7 @@ export async function checkStatusCertificate(orderId: string): Promise<void> {
     console.log(data);
 
     if (data.orderStatus !== 2) {
-        throw new Error('Error!');
+        console.error(data);
+        throw new Error(data.actionCodeDescription);
     }
 }

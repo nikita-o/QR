@@ -25,9 +25,10 @@ router
       await buyCertificate(req.body);
       res.redirect(`${hostFront}/thanks?email=${req.body.email}`);
     } catch (error: any) {
-      res
-        .status(error.status || 500)
-        .send({ message: error.message || "Ошибка!" });
+      res.render('error', {
+        code: error.code || 500,
+        message: error.message || "Ошибка!",
+      });
     }
   })
 
@@ -38,9 +39,10 @@ router
       // res.send({ email });
       res.redirect(`${hostFront}/notification-mail.html?email=${email}`);
     } catch (error: any) {
-      res
-        .status(error.status || 500)
-        .send({ message: error.message || "Ошибка!" });
+      res.render('error', {
+        code: error.code || 500,
+        message: error.message || "Ошибка!",
+      });
     }
   })
 
@@ -50,9 +52,10 @@ router
       const certificate: Certificate = await checkCertificate(String(req.query.encryptId));
       res.send(certificate);
     } catch (error: any) {
-      res
-        .status(error.status || 500)
-        .send({ message: error.message || "Ошибка!" });
+      res.render('error', {
+        code: error.code || 500,
+        message: error.message || "Ошибка!",
+      });
     }
   })
 
@@ -63,10 +66,18 @@ router
       // кидать весь сертификат наверно нет нужды, но на всякий кинул
       res.send(certificate);
     } catch (error: any) {
-      res
-        .status(error.status || 500)
-        .send({ error: { message: error.message || "Ошибка!" } });
+      res.render('error', {
+        code: error.code || 500,
+        message: error.message || "Ошибка!",
+      });
     }
+  })
+
+  .get("/error", (req: Request, res: Response) => {
+    res.render('error', {
+      code: 500,
+      message: 'TEST ERROR',
+    });
   })
 
   // Сюда переходят для просмотра всех сертификатов

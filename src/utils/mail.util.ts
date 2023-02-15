@@ -20,7 +20,11 @@ export async function sendURLPaymentToMail(recipient: string, url: string) {
     ${url}
     * если вы не не собирались купить сертификат в ресторан, проигнорируйте данное письмо.
     `,
-  });
+  })
+    .catch((err) => {
+      console.error(err);
+      throw new Error('неправильный email адрес');
+    });
 }
 
 export async function sendQrToMail(
