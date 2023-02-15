@@ -2,7 +2,7 @@ import express, { NextFunction } from "express";
 import type { Express } from "express";
 import { config } from "dotenv";
 import { router } from "./certificate/certificate.controller";
-import { connect } from "./app-data-source";
+import { dataSource } from "./app-data-source";
 import { HTTP_HOST, HTTP_PORT, urlSberPayment } from "./config/index";
 import cors from "cors";
 
@@ -24,7 +24,7 @@ async function start(): Promise<void> {
 
   app.use("/", router);
 
-  connect()
+  dataSource
     .initialize()
     .then(() => {
       app.listen(HTTP_PORT, () => {
