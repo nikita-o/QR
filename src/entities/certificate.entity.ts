@@ -23,6 +23,7 @@ export enum ERestaurant {
   kavkaz, // АКАДЕМИЯ КАВКАЗСКОЙ КУХНИ
   koi, // IZAKAYA-KOI
   urta, // ЮРТА ЧИНГИСХАНА
+  whiskey, // Академия Виски
 }
 
 @Entity()

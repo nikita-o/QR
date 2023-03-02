@@ -38,7 +38,7 @@ export async function buyCertificate(data: BuyCertificateDto) {
     throw new Error('> 100 сертификатов!');
   }
 
-  if (![1500, 3000, 5000, 1].includes(data.price)) {
+  if (data.price <= 0) {
     throw new Error('Некорректная цена!');
   }
 
