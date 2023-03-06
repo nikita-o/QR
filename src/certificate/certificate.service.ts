@@ -42,6 +42,10 @@ export async function buyCertificate(data: BuyCertificateDto) {
     throw new Error('Некорректная цена!');
   }
 
+  if (!data.email)  {
+    throw new Error('Пустой email!');
+  }
+
   const orderSberbank = await registerCertificate(id, data.price * data.count * 100);
 
   const order: Order = await dataSource
