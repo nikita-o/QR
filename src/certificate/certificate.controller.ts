@@ -7,81 +7,59 @@ import {
 } from "./certificate.service";
 import { Certificate } from "../entities/certificate.entity";
 import { registerCertificate } from "../utils/sberbank.util";
+import createHttpError from "http-errors";
+import expressAsyncHandler from "express-async-handler";
+import {body, query} from "express-validator";
 
 export const router: Router = Router();
 
 router
-  .get('/test', async (req: Request, res: Response) => {
-    console.log('test');
-    console.log(req.body);
-    console.log(req.query);
-    console.log(req.params);
+  .get('/test',
+      expressAsyncHandler(async (req: Request, res: Response) => {
+    throw createHttpError(400, `User not found`);
     res.send({email: 'asd@asd', price: 5000, createDate: new Date().toLocaleDateString()});
-  })
+  }))
 
   // Сюда переходит фронт, при заказе сертификата
-  .post("/buy-certificate", async (req: Request, res: Response) => {
-    try {
+  .post("/buy-certificate",
+      body('email').isEmail(),
+      body('price').isInt({min: 1}),
+      body('count').default(1).isInt({max: 100}),
+      expressAsyncHandler(async (req: Request, res: Response) => {
       await buyCertificate(req.body);
       res.redirect(`${hostFront}/thanks?email=${req.body.email}`);
-    } catch (error: any) {
-      res.render('error', {
-        code: error.code || 500,
-        message: error.message || "Ошибка!",
-      });
-    }
-  })
+  }))
 
   // Сюда переходит сбер после оплаты (или если с заказом оплаты что то не так)
-  .get("/accept-buy-certificate", async (req: Request, res: Response) => {
-    try {
-      const email: string = await acceptTransaction(req.query.orderId as string);
-      // res.send({ email });
-      res.redirect(`${hostFront}/notification-mail.html?email=${email}`);
-    } catch (error: any) {
-      res.render('error', {
-        code: error.code || 500,
-        message: error.message || "Ошибка!",
-      });
-    }
-  })
+  .get("/accept-buy-certificate",
+      query('orderId').isString(),
+      expressAsyncHandler(async (req: Request, res: Response) => {
+    const email: string = await acceptTransaction(req.query.orderId as string);
+    // res.send({ email });
+    res.redirect(`${hostFront}/notification-mail.html?email=${email}`);
+  }))
 
   // Сюда переходят через qr код
-  .get("/check-certificate", async (req: Request, res: Response) => {
-    try {
+  .get("/check-certificate",
+      query('encryptId').isString(),
+      expressAsyncHandler(async (req: Request, res: Response) => {
       const certificate: Certificate = await checkCertificate(String(req.query.encryptId));
       res.send(certificate);
-    } catch (error: any) {
-      res.render('error', {
-        code: error.code || 500,
-        message: error.message || "Ошибка!",
-      });
-    }
-  })
+  }))
 
   // Сюда переходят когда закрывают сертификат
-  .get("/close-certificate", async (req: Request, res: Response) => {
-    try {
+  .get("/close-certificate",
+      query('encryptId').isString(),
+      expressAsyncHandler(async (req: Request, res: Response) => {
       const certificate: Certificate = await acceptCertificate(String(req.query.encryptId));
       // кидать весь сертификат наверно нет нужды, но на всякий кинул
       res.send(certificate);
-    } catch (error: any) {
-      res.render('error', {
-        code: error.code || 500,
-        message: error.message || "Ошибка!",
-      });
-    }
-  })
-
-  .get("/error", (req: Request, res: Response) => {
-    res.render('error', {
-      code: 500,
-      message: 'TEST ERROR',
-    });
-  })
+  }))
 
   // Сюда переходят для просмотра всех сертификатов
-  .get("/table-certificates", async (req: Request, res: Response) => {
+  .get("/table-certificates",
+      query('page').default(0).isInt({min: 0}),
+      expressAsyncHandler(async (req: Request, res: Response) => {
     const page: number = Number(req.query.page ?? 0);
     const {orders, countCertificate, totalPages } = await getCertificatesList(page);
     res.render('table-certificates', {
@@ -91,4 +69,4 @@ router
       countCertificate,
       totalPages,
     });
-  });
+  }));
