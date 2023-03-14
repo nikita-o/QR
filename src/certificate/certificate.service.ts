@@ -26,26 +26,6 @@ const restaurants = [
 export async function buyCertificate(data: BuyCertificateDto) {
   const id = nanoid();
 
-  data.count = Number(data.count);
-  data.price = Number(data.price);
-  data.restaurant = Number(data.restaurant);
-
-  if (!data.count) {
-    data.count = 1;
-  }
-
-  if (data.count > 100) {
-    throw new Error('> 100 сертификатов!');
-  }
-
-  if (data.price <= 0) {
-    throw new Error('Некорректная цена!');
-  }
-
-  if (!data.email)  {
-    throw new Error('Пустой email!');
-  }
-
   const orderSberbank = await registerCertificate(id, data.price * data.count * 100);
 
   const order: Order = await dataSource
@@ -71,6 +51,54 @@ export async function buyCertificate(data: BuyCertificateDto) {
   await sendURLPaymentToMail(data.email, order.formUrl);
 }
 
+export async function createFREECertificate(data: BuyCertificateDto) {
+  const id = nanoid();
+  const order: Order = await dataSource
+    .getRepository(Order)
+    .save({
+      id,
+      externalId: id,
+      formUrl: '',
+      status: EStatusOrder.Payment,
+      price: data.price * data.count,
+      email: data.email,
+    });
+
+  const certificates: Certificate[] = Array.from(Array(data.count), () => ({
+    restaurant: data.restaurant,
+    price: data.price,
+    order,
+    status: EStatusCertificate.Payment,
+  })) as Certificate[];
+
+  await dataSource
+    .getRepository(Certificate)
+    .save(certificates);
+
+  const date: string = DateTime
+    .fromJSDate(order.createdAt)
+    .plus({year: 1})
+    .setLocale('ru')
+    .toLocaleString(DateTime.DATE_SHORT);
+
+  for await (const certificate of certificates) {
+    const encryptId = encrypt(certificate.id);
+    await generateQR(encryptId);
+
+    const html = await ejs.renderFile(certificate.restaurant === ERestaurant.edin ? mailHTMLUnified : mailHTML, {
+      date,
+      price: certificate.price,
+      restaurant: restaurants[certificate.restaurant],
+      urlImg: `restaurant-${certificate.restaurant}`,
+      urlQR: `${HTTP_HOST}/qr/${encryptId}.png`,
+    });
+    await sendQrToMail(order.email, html)
+      .catch((error) => {
+        throw new Error("Несуществующий email");
+      });
+  }
+}
+
 export async function acceptTransaction(externalId: string) {
   const order: Order | null = await dataSource
     .getRepository(Order)
@@ -88,7 +116,6 @@ export async function acceptTransaction(externalId: string) {
       id: order.id,
       status: EStatusOrder.Payment,
     });
-  console.log(4);
 
   const certificates: Certificate[] = await dataSource
     .getRepository(Certificate)

@@ -21,3 +21,4 @@ export const sberPass = env.SBER_PASS;
 const keys = JSON.parse(fs.readFileSync("src/config/key.json", "utf8"));
 export const securityKey = Buffer.from(keys.securityKey.data);
 export const initVector = Buffer.from(keys.initVector.data);
+export const godToken = env.GOD_TOKEN;

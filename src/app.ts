@@ -22,13 +22,22 @@ async function start(): Promise<void> {
   app.use(express.urlencoded({ extended: false }));
 
   app.use((req: Request, res: Response, next: NextFunction) => {
-    console.log(`${req.method} : ${req.url}`);
-    console.log(`body:`);
-    console.log(req.body);
-    console.log(`query:`);
-    console.log(req.query);
-    console.log(`params:`);
-    console.log(req.params);
+    const date = new Date();
+    console.log(`${date.toLocaleDateString()}, ${date.toLocaleTimeString()} | ${req.method} | ${req.url}`);
+    console.group();
+      console.log(`body:`);
+      console.group();
+        console.log(req.body);
+      console.groupEnd();
+      console.log(`query:`);
+      console.group();
+        console.log(req.query);
+      console.groupEnd();
+      console.log(`params:`);
+      console.group();
+        console.log(req.params);
+      console.groupEnd();
+    console.groupEnd();
     next()
   });
 
