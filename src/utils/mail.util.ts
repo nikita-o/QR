@@ -7,7 +7,15 @@ let page: Page;
 
 export async function initMail() {
   // Create a browser instance
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: [
+      "--disable-gpu",
+      "--disable-dev-shm-usage",
+      "--disable-setuid-sandbox",
+      "--no-sandbox",
+    ]
+  });
   // Create a new page
   page = await browser.newPage();
   await page.setViewport({ width: 1250, height: 900 });
