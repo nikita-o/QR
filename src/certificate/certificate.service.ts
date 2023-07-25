@@ -23,6 +23,27 @@ const restaurants = [
   'ЮРТА ЧИНГИСХАНА',
 ]
 
+export async function testEmail(email: string) {
+  const date: string = DateTime
+    .now()
+    .plus({year: 1})
+    .setLocale('ru')
+    .toLocaleString(DateTime.DATE_SHORT);
+
+  const html = await ejs.renderFile(mailHTMLUnified, {
+    date,
+    price: 100,
+    restaurant: 'ЕДИНЫЙ СЕРТИФИКАТ',
+    urlImg: `restaurant-0`,
+    urlQR: 'https://fakeimg.pl/300/',
+  });
+  console.log(html);
+  await sendQrToMail(email, html)
+    .catch((error) => {
+      throw new Error("Несуществующий email");
+    });
+}
+
 export async function buyCertificate(data: BuyCertificateDto) {
   const id = nanoid();
 

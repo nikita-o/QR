@@ -1,5 +1,17 @@
 import nodemailer from "nodemailer";
 import { email, emailPass } from "../config/index"
+import * as puppeteer from 'puppeteer';
+import { Page } from "puppeteer";
+
+let page: Page;
+
+export async function initMail() {
+  // Create a browser instance
+  const browser = await puppeteer.launch();
+  // Create a new page
+  page = await browser.newPage();
+  await page.setViewport({ width: 1250, height: 900 });
+}
 
 const transporter = nodemailer.createTransport({
   service: "Yandex",
@@ -10,7 +22,6 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendURLPaymentToMail(recipient: string, url: string) {
-  console.log(recipient);
   await transporter.sendMail({
     from: email,
     to: recipient,
@@ -32,14 +43,21 @@ export async function sendQrToMail(
   html: string,
   // qrs: Buffer[],
 ) {
+  await page.setContent(html, { waitUntil: 'networkidle0' });
+  const pdf = await page.pdf({
+    // margin: { top: '100px', right: '50px', bottom: '100px', left: '50px' },
+    printBackground: true,
+    format: 'A4',
+  });
+
   await transporter.sendMail({
     from: email,
     to: recipient,
     subject: "Certificate",
     html,
-    // attachments: qrs.map((qr: Buffer, index: number) => ({
-    //   filename: `certificate (${index}).png`,
-    //   content: qr,
-    // })),
+    attachments: [{
+      filename: 'certificate.pdf',
+      content: pdf,
+    }],
   });
 }

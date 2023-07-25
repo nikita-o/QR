@@ -5,10 +5,11 @@ import { router } from "./certificate/certificate.controller";
 import { dataSource } from "./app-data-source";
 import { HTTP_HOST, HTTP_PORT, urlSberPayment } from "./config/index";
 import cors from "cors";
-import crypto from "crypto";
+import { initMail } from "./utils/mail.util";
 
 async function start(): Promise<void> {
   config();
+  await initMail();
 
   const app: Express = express();
 

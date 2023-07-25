@@ -3,7 +3,7 @@ import type { Request, Response } from "express";
 import { godToken, hostFront, HTTP_HOST } from "../config/index";
 import {
   acceptCertificate,
-  checkCertificate, acceptTransaction, buyCertificate, getCertificatesList, createFREECertificate,
+  checkCertificate, acceptTransaction, buyCertificate, getCertificatesList, createFREECertificate, testEmail,
 } from "./certificate.service";
 import { Certificate } from "../entities/certificate.entity";
 import { registerCertificate } from "../utils/sberbank.util";
@@ -14,6 +14,13 @@ import { body, query, validationResult } from "express-validator";
 export const router: Router = Router();
 
 router
+  .post('/test-email',
+    body('email').trim().isEmail(),
+    expressAsyncHandler(async (req: Request, res: Response) => {
+    await testEmail(req.body.email);
+    res.send("ok");
+  }))
+
   .post('/test',
     body('email').trim().isEmail(),
     body('count').default(1).isInt({max: 100}).toInt(),
