@@ -34,7 +34,7 @@ export async function testEmail(email: string) {
     date,
     price: 100,
     restaurant: 'ЕДИНЫЙ СЕРТИФИКАТ',
-    urlImg: `restaurant-0`,
+    urlImg: `${HTTP_HOST}/image/restaurant-0.png`,
     urlQR: 'https://fakeimg.pl/300/',
   });
   console.log(html);
@@ -110,7 +110,7 @@ export async function createFREECertificate(data: BuyCertificateDto) {
       date,
       price: certificate.price,
       restaurant: restaurants[certificate.restaurant],
-      urlImg: `restaurant-${certificate.restaurant}`,
+      urlImg: `${HTTP_HOST}/image/restaurant-${certificate.restaurant}.png`,
       urlQR: `${HTTP_HOST}/qr/${encryptId}.png`,
     });
     await sendQrToMail(order.email, html)
@@ -163,7 +163,7 @@ export async function acceptTransaction(externalId: string) {
       date,
       price: certificate.price,
       restaurant: restaurants[certificate.restaurant],
-      urlImg: `restaurant-${certificate.restaurant}`,
+      urlImg: `${HTTP_HOST}/image/restaurant-${certificate.restaurant}.png`,
       urlQR: `${HTTP_HOST}/qr/${encryptId}.png`,
     });
     await sendQrToMail(order.email, html)
