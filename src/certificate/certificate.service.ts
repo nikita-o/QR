@@ -21,6 +21,8 @@ const restaurants = [
   'АКАДЕМИЯ КАВКАЗСКОЙ КУХНИ',
   'IZAKAYA-KOI',
   'ЮРТА ЧИНГИСХАНА',
+  'АКАДЕМИЯ ВИСКИ',
+  'ВИННАЯ ДЕГУСТАЦИЯ',
 ]
 
 export async function testEmail(email: string) {

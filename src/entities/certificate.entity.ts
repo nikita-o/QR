@@ -24,6 +24,7 @@ export enum ERestaurant {
   koi, // IZAKAYA-KOI
   urta, // ЮРТА ЧИНГИСХАНА
   whiskey, // Академия Виски
+  wineTasting, // Винная дегустация
 }
 
 @Entity()
