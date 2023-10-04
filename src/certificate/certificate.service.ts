@@ -23,6 +23,7 @@ const restaurants = [
   'ЮРТА ЧИНГИСХАНА',
   'АКАДЕМИЯ ВИСКИ',
   'ВИННАЯ ДЕГУСТАЦИЯ',
+  'СВИДАНИЕ В АКК',
 ]
 
 export async function testEmail(email: string) {
