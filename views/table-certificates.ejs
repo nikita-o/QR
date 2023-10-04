@@ -70,7 +70,13 @@
                     case 6: %>
                     Академия Виски
                     <% break;
-                        default: break; }%>
+                    case 7: %>
+                    ВИННАЯ ДЕГУСТАЦИЯ
+                    <% break;
+                    case 8: %>
+                    СВИДАНИЕ В АКК
+                    <% break;
+                    default: break; }%>
                 </td>
                 <td><%= order.price %></td>
                 <td><%= order.createdAt.toLocaleDateString("ru-RU") %></td>
@@ -126,6 +132,15 @@
                                         <% break;
                                         case 5: %>
                                         ЮРТА ЧИНГИСХАНА
+                                        <% break;
+                                        case 6: %>
+                                        Академия Виски
+                                        <% break;
+                                        case 7: %>
+                                        ВИННАЯ ДЕГУСТАЦИЯ
+                                        <% break;
+                                        case 8: %>
+                                        СВИДАНИЕ В АКК
                                         <% break;
                                             default: break; }%>
                                     </td>
