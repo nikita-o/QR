@@ -24,6 +24,7 @@ const restaurants = [
   'АКАДЕМИЯ ВИСКИ',
   'ВИННАЯ ДЕГУСТАЦИЯ',
   'СВИДАНИЕ В АКК',
+  'АКАДЕМИЯ ПАРА',
 ]
 
 export async function testEmail(email: string) {

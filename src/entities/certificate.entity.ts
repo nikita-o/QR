@@ -26,6 +26,7 @@ export enum ERestaurant {
   whiskey, // Академия Виски
   wineTasting, // Винная дегустация
   DateInACC, // Свидание в АКК
+  steam, // Академия Пара
 }
 
 @Entity()
