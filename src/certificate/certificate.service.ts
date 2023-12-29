@@ -13,6 +13,7 @@ import * as ejs from "ejs";
 
 const mailHTMLUnified = 'mail-html/mail.ejs';
 const mailHTML = 'mail-html/mail2.ejs';
+const mailNotRestaurantHTML = 'mail-html/mail2-not-restaraunt.ejs';
 
 const restaurants = [
   'ЕДИНЫЙ СЕРТИФИКАТ',
@@ -110,7 +111,14 @@ export async function createFREECertificate(data: BuyCertificateDto) {
     const encryptId = encrypt(certificate.id);
     await generateQR(encryptId);
 
-    const html = await ejs.renderFile(certificate.restaurant === ERestaurant.edin ? mailHTMLUnified : mailHTML, {
+    const template =
+        certificate.restaurant === ERestaurant.edin
+          ? mailHTMLUnified
+          : certificate.restaurant === ERestaurant.steam
+              ? mailNotRestaurantHTML
+              : mailHTML;
+
+    const html = await ejs.renderFile(template, {
       date,
       price: certificate.price,
       restaurant: restaurants[certificate.restaurant],
@@ -163,7 +171,14 @@ export async function acceptTransaction(externalId: string) {
     const encryptId = encrypt(certificate.id);
     await generateQR(encryptId);
 
-    const html = await ejs.renderFile(certificate.restaurant === ERestaurant.edin ? mailHTMLUnified : mailHTML, {
+    const template =
+        certificate.restaurant === ERestaurant.edin
+            ? mailHTMLUnified
+            : certificate.restaurant === ERestaurant.steam
+                ? mailNotRestaurantHTML
+                : mailHTML;
+
+    const html = await ejs.renderFile(template, {
       date,
       price: certificate.price,
       restaurant: restaurants[certificate.restaurant],

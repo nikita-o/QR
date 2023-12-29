@@ -35,9 +35,9 @@ export async function sendURLPaymentToMail(recipient: string, url: string) {
     to: recipient,
     subject: "Certificate",
     text: `
-    Ссылка на оплату сертификатов в ресторан: 
+    Ссылка на оплату сертификата: 
     ${url}
-    * если вы не не собирались купить сертификат в ресторан, проигнорируйте данное письмо.
+    * если вы не не собирались купить сертификат, проигнорируйте данное письмо.
     `,
   })
     .catch((err) => {
