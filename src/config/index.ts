@@ -18,6 +18,9 @@ export const sberToken = env.SBER_TOKEN;
 export const sberLogin = env.SBER_LOGIN;
 export const sberPass = env.SBER_PASS;
 
+export const yookassaShopId = env.YOOKASSA_SHOP_ID ?? '';
+export const yookassaSecretKey = env.YOOKASSA_SECRET_KEY ?? '';
+
 const keys = JSON.parse(fs.readFileSync("src/config/key.json", "utf8"));
 export const securityKey = Buffer.from(keys.securityKey.data);
 export const initVector = Buffer.from(keys.initVector.data);

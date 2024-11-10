@@ -1,11 +1,10 @@
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
-  PrimaryColumn,
   CreateDateColumn,
-  UpdateDateColumn,
+  Entity,
   ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { Order } from "./order.entity";
 
@@ -21,7 +20,8 @@ export enum ERestaurant {
   fame, // FAME PASTA E VINO
   hinkal, // АКАДЕМИЯ ХИНКАЛИ
   kavkaz, // АКАДЕМИЯ КАВКАЗСКОЙ КУХНИ
-  koi, // IZAKAYA-KOI
+  // Лишний раз не трогаю, чтобы не поломать БД
+  koi, // hotel (раньше была IZAKAYA-KOI)
   urta, // ЮРТА ЧИНГИСХАНА
   whiskey, // Академия Виски
   wineTasting, // Винная дегустация
@@ -31,11 +31,12 @@ export enum ERestaurant {
 
 @Entity()
 export class Certificate {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id!: string;
 
   @ManyToOne(() => Order)
   order!: Order;
+
   @Column()
   orderId!: string;
 
@@ -43,14 +44,14 @@ export class Certificate {
   price!: number;
 
   @Column({
-    type: 'enum',
+    type: "enum",
     enum: ERestaurant,
     default: ERestaurant.edin,
   })
   restaurant!: ERestaurant;
 
   @Column({
-    type: 'enum',
+    type: "enum",
     enum: EStatusCertificate,
     default: EStatusCertificate.WaitPayment,
   })
