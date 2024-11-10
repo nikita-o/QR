@@ -3,6 +3,7 @@ import { Router } from "express";
 import createHttpError from "http-errors";
 import expressAsyncHandler from "express-async-handler";
 import { body, query, validationResult } from "express-validator";
+import type { Payment } from "@a2seven/yoo-checkout";
 import { godToken, hostFront } from "../config/index";
 import {
   acceptCertificate,
@@ -84,17 +85,16 @@ router
       // if (!validationResult(req).isEmpty()) {
       //   throw createHttpError(400, "Ошибка валидации");
       // }
-      switch (req.body.payment.status) {
+      const payment: Payment = req.body.object;
+      switch (payment.status) {
         case "waiting_for_capture":
-          await onCapture(req.body.payment);
-          res.send({});
+          await onCapture(payment);
+          res.status(200).send({});
           break;
         case "succeeded":
           // eslint-disable-next-line no-case-declarations
-          const email: string = await acceptTransaction(
-            req.body.object.payment,
-          );
-          res.send({});
+          const email: string = await acceptTransaction(payment);
+          res.status(200).send({});
           // res.redirect(`${hostFront}/notification-mail.html?email=${email}`);
           break;
         default:
