@@ -58,7 +58,7 @@ export async function buyCertificate(data: BuyCertificateDto) {
 
   // const orderSberbank = await registerCertificate(id, data.price * data.count * 100);
 
-  const payment = await createPayment(id, data.price * data.count * 100);
+  const payment = await createPayment(id, data.price * data.count);
 
   const order: Order = await dataSource.getRepository(Order).save({
     id,
