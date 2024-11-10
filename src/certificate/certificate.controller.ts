@@ -78,7 +78,7 @@ router
   )
 
   // Сюда переходит сбер после оплаты (или если с заказом оплаты что то не так)
-  .get(
+  .post(
     "/accept-buy-certificate",
     expressAsyncHandler(async (req: Request, res: Response) => {
       // if (!validationResult(req).isEmpty()) {
