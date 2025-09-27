@@ -264,6 +264,7 @@ export async function acceptCertificate(
     throw new Error("Сертификат уже погашен");
   }
   certificate.status = EStatusCertificate.Close;
+  certificate.closeAt = new Date();
   return await dataSource.getRepository(Certificate).save(certificate);
 }
 

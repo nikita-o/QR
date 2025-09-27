@@ -41,6 +41,7 @@
                 <th scope="col">Дата создания</th>
                 <th scope="col">Email клиента</th>
                 <th scope="col">Статус</th>
+                <th scope="col">Дата закрытия</th>
                 <th scope="col"></th>
             </tr>
             </thead>
@@ -100,6 +101,11 @@
                     <span class="badge rounded-pill text-bg-danger">Просрочен</span>
                     <% break;
                         default: break; }%>
+                </td>
+                <td>
+                    <% if (order.certificates.length === 1) { %>
+                        <%= order.certificates[0].closeAt?.toLocaleDateString("ru-RU") ?? '-' %>
+                    <% } %>
                 </td>
                 <td>
                     <% if (order.certificates.length > 1) { %>
@@ -171,6 +177,7 @@
                                         <% break;
                                             default: break; }%>
                                     </td>
+                                    <td><%= certificate.closeAt?.toLocaleDateString("ru-RU") ?? '-' %></td>
                                     <td></td>
                                 </tr>
                             <% }); %>

@@ -57,6 +57,9 @@ export class Certificate {
   })
   status!: EStatusCertificate;
 
+  @Column({ nullable: true })
+  closeAt!: Date;
+
   @CreateDateColumn()
   createdAt!: Date;
 
